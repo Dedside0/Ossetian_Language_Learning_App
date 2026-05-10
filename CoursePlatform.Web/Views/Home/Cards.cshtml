@@ -1,0 +1,97 @@
+@model List<Adam.Models.Card>
+@{
+    ViewData["Title"] = "Карточки";
+    var courseId = ViewBag.CourseId;
+    var lessonId = ViewBag.LessonId;
+}
+
+<div class="cards-page">
+    <div class="cards-header">
+        <a asp-action="Lessons" asp-route-courseId="@courseId" class="back-btn"><i class="fas fa-arrow-left"></i></a>
+        <div class="cards-progress">
+            <span id="currentCard">1</span> / <span>@Model.Count</span>
+        </div>
+        <div class="progress-bar-custom">
+            <div id="progressFill" class="progress-fill" style="width: @(Model.Count > 0 ? (1.0 / Model.Count * 100) : 0)%"></div>
+        </div>
+    </div>
+
+    <div class="flashcard-container" id="flashcardContainer">
+        @for (int i = 0; i < Model.Count; i++)
+        {
+            var card = Model[i];
+            <div class="flashcard @(i == 0 ? "active" : "")" data-index="@i">
+                <div class="flashcard-inner" onclick="this.classList.toggle('flipped')">
+                    <div class="flashcard-front">
+                        <div class="card-image">
+                            <img src="@card.ImageUrl" alt="@card.RussianWord" onerror="this.style.display='none'" />
+                        </div>
+                        <div class="card-word">@card.OssetianWord</div>
+                        @if (!string.IsNullOrEmpty(card.VerbType))
+                        {
+                            <div class="card-verb-type">@card.VerbType</div>
+                        }
+                        <button class="btn-audio" onclick="event.stopPropagation(); speakWord('@card.OssetianWord')">
+                            <i class="fas fa-volume-up"></i>
+                        </button>
+                        <div class="card-hint">Нажмите, чтобы перевернуть</div>
+                    </div>
+                    <div class="flashcard-back">
+                        <div class="card-image">
+                            <img src="@card.ImageUrl" alt="@card.RussianWord" onerror="this.style.display='none'" />
+                        </div>
+                        <div class="card-word russian">@card.RussianWord</div>
+                        @if (!string.IsNullOrEmpty(card.VerbType))
+                        {
+                            <div class="card-verb-type">@card.VerbType</div>
+                        }
+                        <div class="card-hint">Нажмите, чтобы вернуть</div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="cards-actions">
+        <a asp-action="Lessons" asp-route-courseId="@courseId" class="btn-exit">
+            <i class="fas fa-sign-out-alt"></i> Выйти
+        </a>
+        <button id="btnNext" class="btn-next" onclick="nextCard()">
+            Продолжить <i class="fas fa-arrow-right"></i>
+        </button>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    let currentIndex = 0;
+    const totalCards = @Model.Count;
+
+    function nextCard() {
+        if (currentIndex >= totalCards - 1) {
+            window.location.href = '@Url.Action("Lessons", new { courseId = courseId })';
+            return;
+        }
+        const cards = document.querySelectorAll('.flashcard');
+        cards[currentIndex].classList.remove('active');
+        cards[currentIndex].querySelector('.flashcard-inner').classList.remove('flipped');
+        currentIndex++;
+        cards[currentIndex].classList.add('active');
+        document.getElementById('currentCard').textContent = currentIndex + 1;
+        document.getElementById('progressFill').style.width = ((currentIndex + 1) / totalCards * 100) + '%';
+
+        if (currentIndex === totalCards - 1) {
+            document.getElementById('btnNext').innerHTML = 'Завершить <i class="fas fa-check"></i>';
+        }
+    }
+
+    function speakWord(word) {
+        if ('speechSynthesis' in window) {
+            const utterance = new SpeechSynthesisUtterance(word);
+            utterance.lang = 'ru-RU';
+            utterance.rate = 0.8;
+            speechSynthesis.speak(utterance);
+        }
+    }
+</script>
+}

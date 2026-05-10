@@ -1,8 +1,61 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+@model List<Adam.Models.Course>
+@{
+    ViewData["Title"] = "Курсы";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="page-header">
+    <h1>Мои курсы</h1>
+    <p class="subtitle">Выберите курс для изучения</p>
+</div>
+
+<div class="courses-list">
+    @foreach (var course in Model)
+    {
+        <a asp-action="Lessons" asp-route-courseId="@course.Id" class="course-card">
+            <div class="course-icon">@course.Icon</div>
+            <div class="course-info">
+                <h3>@course.Title</h3>
+                <p>@course.Description</p>
+                <div class="course-meta">
+                    <span><i class="fas fa-book"></i> @course.Lessons.Count урок(ов)</span>
+                    @if (course.IsUserCreated)
+                    {
+                        <span class="badge-custom">Мой курс</span>
+                    }
+                </div>
+            </div>
+            <div class="course-arrow"><i class="fas fa-chevron-right"></i></div>
+        </a>
+    }
+</div>
+
+<div class="add-course-section">
+    <button type="button" class="btn-add-course" onclick="document.getElementById('addCourseModal').classList.add('show')">
+        <i class="fas fa-plus"></i> Добавить курс
+    </button>
+</div>
+
+<!-- Modal -->
+<div id="addCourseModal" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-header-custom">
+            <h3>Новый курс</h3>
+            <button type="button" class="modal-close" onclick="document.getElementById('addCourseModal').classList.remove('show')">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <form asp-action="CreateCourse" method="post">
+            <div class="form-group-custom">
+                <label>Название курса</label>
+                <input type="text" name="title" class="input-custom" placeholder="Например: Мой словарь" required />
+            </div>
+            <div class="form-group-custom">
+                <label>Описание</label>
+                <input type="text" name="description" class="input-custom" placeholder="Краткое описание курса" />
+            </div>
+            <button type="submit" class="btn-primary-custom">
+                <i class="fas fa-plus"></i> Создать курс
+            </button>
+        </form>
+    </div>
 </div>

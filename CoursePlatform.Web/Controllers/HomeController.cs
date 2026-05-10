@@ -1,32 +1,73 @@
-using CoursePlatform.Web.Models;
-using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using Microsoft.AspNetCore.Mvc;
+using Adam.Models;
+using Adam.Data;
+using CoursePlatform.Web.Models;
 
-namespace CoursePlatform.Web.Controllers
+namespace Adam.Controllers;
+
+public class HomeController : Controller
 {
-    public class HomeController : Controller
+    public IActionResult Index()
     {
-        private readonly ILogger<HomeController> _logger;
+        var courses = DataStore.GetCourses();
+        return View(courses);
+    }
 
-        public HomeController(ILogger<HomeController> logger)
-        {
-            _logger = logger;
-        }
+    public IActionResult Lessons(int courseId)
+    {
+        var course = DataStore.GetCourse(courseId);
+        if (course == null) return RedirectToAction("Index");
+        return View(course);
+    }
 
-        public IActionResult Index()
-        {
-            return View();
-        }
+    public IActionResult Cards(int courseId, int lessonId)
+    {
+        var lesson = DataStore.GetLesson(courseId, lessonId);
+        if (lesson == null) return RedirectToAction("Index");
+        ViewBag.CourseId = courseId;
+        ViewBag.LessonId = lessonId;
+        return View(lesson.Cards);
+    }
 
-        public IActionResult Privacy()
-        {
-            return View();
-        }
+    public IActionResult Conjugation(int courseId, int lessonId)
+    {
+        var lesson = DataStore.GetLesson(courseId, lessonId);
+        if (lesson == null) return RedirectToAction("Index");
+        ViewBag.CourseId = courseId;
+        ViewBag.LessonId = lessonId;
+        return View(lesson.ConjugationQuestions);
+    }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
+    [HttpPost]
+    public IActionResult CreateCourse(string title, string description)
+    {
+        var course = DataStore.AddCourse(
+            string.IsNullOrWhiteSpace(title) ? "Новый курс" : title,
+            string.IsNullOrWhiteSpace(description) ? "Пользовательский курс" : description
+        );
+        return RedirectToAction("Constructor", new { courseId = course.Id, lessonId = course.Lessons[0].Id });
+    }
+
+    public IActionResult Constructor(int courseId, int lessonId)
+    {
+        var lesson = DataStore.GetLesson(courseId, lessonId);
+        if (lesson == null) return RedirectToAction("Index");
+        ViewBag.CourseId = courseId;
+        ViewBag.LessonId = lessonId;
+        return View(lesson);
+    }
+
+    [HttpPost]
+    public IActionResult AddCard(int courseId, int lessonId, string ossetianWord, string russianWord)
+    {
+        DataStore.AddCard(courseId, lessonId, ossetianWord, russianWord);
+        return RedirectToAction("Constructor", new { courseId, lessonId });
+    }
+
+    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+    public IActionResult Error()
+    {
+        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
 }
