@@ -1,0 +1,73 @@
+@model Adam.Models.Course
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<div class="page-header">
+    <a asp-action="Index" class="back-btn"><i class="fas fa-arrow-left"></i> Курсы</a>
+    <h1>@Model.Title</h1>
+    <p class="subtitle">@Model.Description</p>
+</div>
+
+<div class="lessons-list">
+    @foreach (var lesson in Model.Lessons)
+    {
+        <div class="lesson-card">
+            <div class="lesson-header">
+                <div class="lesson-number">@Model.Lessons.IndexOf(lesson) + 1</div>
+                <h3>@lesson.Title</h3>
+            </div>
+
+            <div class="theory-section">
+                <div class="theory-toggle" onclick="this.parentElement.classList.toggle('expanded')">
+                    <i class="fas fa-lightbulb"></i> Теория
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </div>
+                <div class="theory-content">
+                    @Html.Raw(lesson.TheoryHtml)
+                </div>
+            </div>
+
+            <div class="tasks-list">
+                @if (lesson.Cards.Any())
+                {
+                    <a asp-action="Cards" asp-route-courseId="@Model.Id" asp-route-lessonId="@lesson.Id" class="task-item">
+                        <div class="task-icon lexicon"><i class="fas fa-clone"></i></div>
+                        <div class="task-info">
+                            <h4>Лексика</h4>
+                            <p>Карточки · @lesson.Cards.Count слов</p>
+                        </div>
+                        <i class="fas fa-play task-play"></i>
+                    </a>
+                }
+
+                @if (lesson.ConjugationQuestions.Any())
+                {
+                    <a asp-action="Conjugation" asp-route-courseId="@Model.Id" asp-route-lessonId="@lesson.Id" class="task-item">
+                        <div class="task-icon conjugation"><i class="fas fa-pen-nib"></i></div>
+                        <div class="task-info">
+                            <h4>Спряжение</h4>
+                            <p>Тест · @lesson.ConjugationQuestions.Count заданий</p>
+                        </div>
+                        <i class="fas fa-play task-play"></i>
+                    </a>
+                }
+
+                @if (!lesson.Cards.Any() && !lesson.ConjugationQuestions.Any())
+                {
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <p>Заданий пока нет</p>
+                    </div>
+                }
+            </div>
+
+            @if (Model.IsUserCreated)
+            {
+                <a asp-action="Constructor" asp-route-courseId="@Model.Id" asp-route-lessonId="@lesson.Id" class="btn-secondary-custom">
+                    <i class="fas fa-plus"></i> Добавить задание
+                </a>
+            }
+        </div>
+    }
+</div>

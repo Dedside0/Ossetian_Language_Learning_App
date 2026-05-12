@@ -1,0 +1,157 @@
+@model Adam.Models.Lesson
+@{
+    ViewData["Title"] = "Конструктор карточек";
+    var courseId = (int)ViewBag.CourseId;
+    var lessonId = (int)ViewBag.LessonId;
+}
+
+<div class="page-header">
+    <a asp-action="Lessons" asp-route-courseId="@courseId" class="back-btn"><i class="fas fa-arrow-left"></i> К урокам</a>
+    <h1>Конструктор карточек</h1>
+    <p class="subtitle">@Model.Title</p>
+</div>
+
+<div class="constructor-page">
+    @if (Model.Cards.Any())
+    {
+        <div class="constructor-cards">
+            <h3>Добавленные карточки (@Model.Cards.Count)</h3>
+            <div class="mini-cards-grid">
+                @foreach (var card in Model.Cards)
+                {
+                    <div class="mini-card">
+                        <div class="mini-card-img">
+                            <img src="@card.ImageUrl" alt="@card.RussianWord" onerror="this.parentElement.innerHTML='<i class=\'fas fa-image\'></i>'" />
+                        </div>
+                        <div class="mini-card-text">
+                            <strong>@card.OssetianWord</strong>
+                            <span>@card.RussianWord</span>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+
+    <div class="add-card-section">
+        <button type="button" class="btn-add-card" id="btnShowForm" onclick="toggleForm()">
+            <i class="fas fa-plus"></i> Добавить карточку
+        </button>
+
+        <div id="cardForm" class="card-form" style="display:none;">
+            <form asp-action="AddCard" method="post">
+                <input type="hidden" name="courseId" value="@courseId" />
+                <input type="hidden" name="lessonId" value="@lessonId" />
+
+                <div class="form-group-custom">
+                    <label><i class="fas fa-language"></i> Слово на осетинском</label>
+                    <input type="text" name="ossetianWord" class="input-custom" placeholder="Например: Хæрын" required id="ossetianInput" />
+                </div>
+
+                <div class="form-group-custom">
+                    <label><i class="fas fa-globe"></i> Слово на русском</label>
+                    <input type="text" name="russianWord" class="input-custom" placeholder="Например: Есть" required id="russianInput" />
+                </div>
+
+                <div class="form-group-custom">
+                    <label><i class="fas fa-microphone"></i> Запись аудио</label>
+                    <div class="audio-recorder">
+                        <button type="button" class="btn-record" id="btnRecord" onclick="toggleRecording()">
+                            <i class="fas fa-microphone"></i> Записать произношение
+                        </button>
+                        <div id="recordingStatus" class="recording-status" style="display:none;">
+                            <i class="fas fa-circle recording-dot"></i> Запись...
+                        </div>
+                        <audio id="audioPlayback" controls style="display:none; width:100%; margin-top:8px;"></audio>
+                    </div>
+                </div>
+
+                <div class="form-group-custom" id="imagePreviewSection" style="display:none;">
+                    <label>Превью изображения</label>
+                    <div class="image-preview" id="imagePreview"></div>
+                </div>
+
+                <button type="submit" class="btn-primary-custom" id="btnSave">
+                    <i class="fas fa-save"></i> Сохранить
+                </button>
+                <button type="button" class="btn-cancel" onclick="toggleForm()">
+                    Отмена
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="constructor-footer">
+        <a asp-action="Lessons" asp-route-courseId="@courseId" class="btn-primary-custom btn-done">
+            <i class="fas fa-check"></i> Готово
+        </a>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    let mediaRecorder;
+    let audioChunks = [];
+    let isRecording = false;
+
+    function toggleForm() {
+        const form = document.getElementById('cardForm');
+        const btn = document.getElementById('btnShowForm');
+        if (form.style.display === 'none') {
+            form.style.display = 'block';
+            btn.style.display = 'none';
+        } else {
+            form.style.display = 'none';
+            btn.style.display = 'flex';
+        }
+    }
+
+    document.getElementById('russianInput').addEventListener('input', function() {
+        const val = this.value.trim();
+        const section = document.getElementById('imagePreviewSection');
+        const preview = document.getElementById('imagePreview');
+        if (val.length > 0) {
+            section.style.display = 'block';
+            preview.innerHTML = '<img src="https://via.placeholder.com/300x200?text=' + encodeURIComponent(val) + '" alt="' + val + '" />';
+        } else {
+            section.style.display = 'none';
+        }
+    });
+
+    async function toggleRecording() {
+        const btn = document.getElementById('btnRecord');
+        const status = document.getElementById('recordingStatus');
+        const playback = document.getElementById('audioPlayback');
+
+        if (!isRecording) {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                audioChunks = [];
+
+                mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+                mediaRecorder.onstop = () => {
+                    const blob = new Blob(audioChunks, { type: 'audio/webm' });
+                    playback.src = URL.createObjectURL(blob);
+                    playback.style.display = 'block';
+                    stream.getTracks().forEach(t => t.stop());
+                };
+
+                mediaRecorder.start();
+                isRecording = true;
+                btn.innerHTML = '<i class="fas fa-stop"></i> Остановить';
+                btn.classList.add('recording');
+                status.style.display = 'flex';
+            } catch (err) {
+                alert('Не удалось получить доступ к микрофону');
+            }
+        } else {
+            mediaRecorder.stop();
+            isRecording = false;
+            btn.innerHTML = '<i class="fas fa-microphone"></i> Записать снова';
+            btn.classList.remove('recording');
+            status.style.display = 'none';
+        }
+    }
+</script>
+}
