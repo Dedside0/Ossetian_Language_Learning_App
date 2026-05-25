@@ -31,7 +31,7 @@
                         {
                             <div class="card-verb-type">@card.VerbType</div>
                         }
-                        <button class="btn-audio" onclick="event.stopPropagation(); speakWord('@card.OssetianWord')">
+                        <button class="btn-audio" onclick="event.stopPropagation(); speakWord('@card.OssetianWord', '@card.AudioUrl')">
                             <i class="fas fa-volume-up"></i>
                         </button>
                         <div class="card-hint">Нажмите, чтобы перевернуть</div>
@@ -85,8 +85,21 @@
         }
     }
 
-    function speakWord(word) {
-        if ('speechSynthesis' in window) {
+        function speakWord(word, url) {
+        // Проверяем, что URL существует, не равен null, не пустой и не является строкой "null"
+        if (url && url !== 'null' && url.trim() !== '') {
+            try {
+                // Создаем аудио в памяти и сразу воспроизводим
+                const audio = new Audio(url);
+                audio.play().catch(err => {
+                    console.error("Ошибка воспроизведения файла:", err);
+                });
+            } catch (e) {
+                console.error("Не удалось инициализировать аудио:", e);
+            }
+        }
+        // Если файла нет, используем синтез речи
+        else if ('speechSynthesis' in window) {
             const utterance = new SpeechSynthesisUtterance(word);
             utterance.lang = 'ru-RU';
             utterance.rate = 0.8;

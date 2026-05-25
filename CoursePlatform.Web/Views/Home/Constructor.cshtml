@@ -42,6 +42,7 @@
             <form asp-action="AddCard" method="post">
                 <input type="hidden" name="courseId" value="@courseId" />
                 <input type="hidden" name="lessonId" value="@lessonId" />
+                <input type="hidden" name="audioUrl" id="audioUrl" value="" />
 
                 <div class="form-group-custom">
                     <label><i class="fas fa-language"></i> Слово на осетинском</label>
@@ -118,40 +119,84 @@
         }
     });
 
-    async function toggleRecording() {
-        const btn = document.getElementById('btnRecord');
-        const status = document.getElementById('recordingStatus');
-        const playback = document.getElementById('audioPlayback');
+            async function toggleRecording() {
+            const btn = document.getElementById('btnRecord');
+            const status = document.getElementById('recordingStatus');
+            const playback = document.getElementById('audioPlayback');
+            const audioUrlField = document.getElementById('audioUrl');
 
-        if (!isRecording) {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                mediaRecorder = new MediaRecorder(stream);
-                audioChunks = [];
+            if (!isRecording) {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    mediaRecorder = new MediaRecorder(stream);
+                    audioChunks = [];
 
-                mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
-                mediaRecorder.onstop = () => {
-                    const blob = new Blob(audioChunks, { type: 'audio/webm' });
-                    playback.src = URL.createObjectURL(blob);
-                    playback.style.display = 'block';
-                    stream.getTracks().forEach(t => t.stop());
-                };
+                    mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
 
-                mediaRecorder.start();
-                isRecording = true;
-                btn.innerHTML = '<i class="fas fa-stop"></i> Остановить';
-                btn.classList.add('recording');
-                status.style.display = 'flex';
-            } catch (err) {
-                alert('Не удалось получить доступ к микрофону');
+                    mediaRecorder.onstop = async () => {
+                        // СОЗДАЁМ BLOB ИЗ СОБРАННЫХ ДАННЫХ
+                        const blob = new Blob(audioChunks, { type: 'audio/webm' });
+
+                        console.log('Создан blob:', blob.size, 'bytes'); // Для отладки
+
+                        // Отправляем на сервер
+                        const formData = new FormData();
+                        formData.append('audioFile', blob, `recording_${Date.now()}.webm`);
+
+                        try {
+                            // Показываем статус загрузки
+                            status.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Загрузка...';
+
+                            const response = await fetch('/api/Audio/upload', {
+                                method: 'POST',
+                                body: formData
+                            });
+
+                            const result = await response.json();
+                            console.log('Ответ сервера:', result);
+
+                            if (result.success && audioUrlField) {
+                                audioUrlField.value = result.fileUrl;
+                                status.innerHTML = '<i class="fas fa-check-circle"></i> Сохранено!';
+                                setTimeout(() => {
+                                    if (status) status.style.display = 'none';
+                                }, 1500);
+                            } else {
+                                status.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Ошибка сервера';
+                            }
+                        } catch (err) {
+                            console.error('Ошибка загрузки:', err);
+                            status.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Ошибка';
+                        }
+
+                        // Временная ссылка для прослушивания
+                        const tempUrl = URL.createObjectURL(blob);
+                        playback.src = tempUrl;
+                        playback.style.display = 'block';
+
+                        // Останавливаем все треки микрофона
+                        stream.getTracks().forEach(t => t.stop());
+                    };
+
+                    mediaRecorder.start();
+                    isRecording = true;
+                    btn.innerHTML = '<i class="fas fa-stop"></i> Остановить';
+                    btn.classList.add('recording');
+                    status.style.display = 'flex';
+                    status.innerHTML = '<i class="fas fa-circle recording-dot"></i> Запись...';
+                } catch (err) {
+                    console.error('Ошибка доступа к микрофону:', err);
+                    alert('Не удалось получить доступ к микрофону. Проверьте разрешения.');
+                }
+            } else {
+                if (mediaRecorder) {
+                    mediaRecorder.stop();
+                }
+                isRecording = false;
+                btn.innerHTML = '<i class="fas fa-microphone"></i> Записать снова';
+                btn.classList.remove('recording');
+                if (status) status.style.display = 'none';
             }
-        } else {
-            mediaRecorder.stop();
-            isRecording = false;
-            btn.innerHTML = '<i class="fas fa-microphone"></i> Записать снова';
-            btn.classList.remove('recording');
-            status.style.display = 'none';
         }
-    }
 </script>
 }

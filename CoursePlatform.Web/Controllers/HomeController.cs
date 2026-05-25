@@ -59,12 +59,12 @@ public class HomeController : Controller
     }
 
     [HttpPost]
-    public IActionResult AddCard(int courseId, int lessonId, string ossetianWord, string russianWord)
+    public IActionResult AddCard(int courseId, int lessonId, string ossetianWord, string russianWord, string audioUrl)
     {
-        DataStore.AddCard(courseId, lessonId, ossetianWord, russianWord);
+        DataStore.AddCard(courseId, lessonId, ossetianWord, russianWord, audioUrl);
         return RedirectToAction("Constructor", new { courseId, lessonId });
     }
-
+    
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {
