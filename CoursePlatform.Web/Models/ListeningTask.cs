@@ -2,7 +2,11 @@
 {
     public class ListeningTask
     {
-        public string OssetianAudioUrl { get; set; } = string.Empty;
-        public string RussianWord { get; set; } = string.Empty;
+        public int Id { get; set; }
+        public string AudioUrl { get; set; }
+
+        public string AudioDecoding { get; set; }
+
+        public string? RussianTranslation { get; set; }
     }
 }
