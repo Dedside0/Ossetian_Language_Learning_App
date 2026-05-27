@@ -427,4 +427,4 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
-/CoursePlatform.Web/wwwroot/uploads
+/CoursePlatform.Web/wwwroot/uploads/audio
