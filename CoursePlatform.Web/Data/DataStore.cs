@@ -49,7 +49,7 @@ public static class DataStore
         return course?.Lessons.FirstOrDefault(l => l.Id == lessonId);
     }
 
-    public static Card AddCard(int courseId, int lessonId, string ossetianWord, string russianWord)
+    public static Card AddCard(int courseId, int lessonId, string ossetianWord, string russianWord, string audioUrl)
     {
         var lesson = GetLesson(courseId, lessonId);
         if (lesson == null) throw new Exception("Lesson not found");
@@ -59,7 +59,8 @@ public static class DataStore
             Id = _nextCardId++,
             OssetianWord = ossetianWord,
             RussianWord = russianWord,
-            ImageUrl = $"https://via.placeholder.com/300x200?text={Uri.EscapeDataString(russianWord)}"
+            ImageUrl = $"https://via.placeholder.com/300x200?text={Uri.EscapeDataString(russianWord)}",
+            AudioUrl = audioUrl
         };
         lesson.Cards.Add(card);
         return card;
