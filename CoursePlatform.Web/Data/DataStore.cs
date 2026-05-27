@@ -189,12 +189,12 @@ public static class DataStore
     {
         return new List<Card>
         {
-            new Card { Id = 1, OssetianWord = "Хæрын", RussianWord = "Есть (кушать)", VerbType = "Переходный", ImageUrl = "https://via.placeholder.com/300x200/FF5722/fff?text=Есть" },
-            new Card { Id = 2, OssetianWord = "Нуазын", RussianWord = "Пить", VerbType = "Переходный", ImageUrl = "https://via.placeholder.com/300x200/2196F3/fff?text=Пить" },
-            new Card { Id = 3, OssetianWord = "Цæуын", RussianWord = "Идти", VerbType = "Непереходный", ImageUrl = "https://via.placeholder.com/300x200/4CAF50/fff?text=Идти" },
-            new Card { Id = 4, OssetianWord = "Бадын", RussianWord = "Сидеть", VerbType = "Непереходный", ImageUrl = "https://via.placeholder.com/300x200/9C27B0/fff?text=Сидеть" },
-            new Card { Id = 5, OssetianWord = "Лæууын", RussianWord = "Стоять", VerbType = "Непереходный", ImageUrl = "https://via.placeholder.com/300x200/FF9800/fff?text=Стоять" },
-            new Card { Id = 6, OssetianWord = "Хуыссын", RussianWord = "Спать", VerbType = "Непереходный", ImageUrl = "https://via.placeholder.com/300x200/607D8B/fff?text=Спать" },
+            new Card { Id = 1, OssetianWord = "Хæрын", RussianWord = "Есть (кушать)", VerbType = "Переходный", },
+            new Card { Id = 2, OssetianWord = "Нуазын", RussianWord = "Пить", VerbType = "Переходный", },
+            new Card { Id = 3, OssetianWord = "Цæуын", RussianWord = "Идти", VerbType = "Непереходный",  },
+            new Card { Id = 4, OssetianWord = "Бадын", RussianWord = "Сидеть", VerbType = "Непереходный",  },
+            new Card { Id = 5, OssetianWord = "Лæууын", RussianWord = "Стоять", VerbType = "Непереходный", ImageUrl = "https://avatars.mds.yandex.net/i?id=665ad2a40286b87082280c8abe2d0807_l-5288364-images-thumbs&n=13" },
+            new Card { Id = 6, OssetianWord = "Хуыссын", RussianWord = "Спать", VerbType = "Непереходный", ImageUrl = "https://avatars.mds.yandex.net/i?id=665ad2a40286b87082280c8abe2d0807_l-5288364-images-thumbs&n=13" },
             new Card { Id = 7, OssetianWord = "Дзурын", RussianWord = "Говорить", VerbType = "Непереходный", ImageUrl = "https://via.placeholder.com/300x200/E91E63/fff?text=Говорить" },
             new Card { Id = 8, OssetianWord = "Хъусын", RussianWord = "Слушать", VerbType = "Переходный", ImageUrl = "https://via.placeholder.com/300x200/00BCD4/fff?text=Слушать" },
             new Card { Id = 9, OssetianWord = "Кæсын", RussianWord = "Смотреть", VerbType = "Непереходный", ImageUrl = "https://via.placeholder.com/300x200/8BC34A/fff?text=Смотреть" },
