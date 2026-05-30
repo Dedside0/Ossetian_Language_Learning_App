@@ -33,7 +33,7 @@ public static class DataStore
                 {
                     Id = _nextLessonId++,
                     Title = "Урок 1",
-                    TheoryHtml = "<p>Добавьте задания в этот урок с помощью конструктора карточек.</p>",
+                    TheoryHtml = "<p>Добавьте задания в этот урок с помощью конструктора.</p>",
                     Cards = new List<Card>(),
                     ConjugationQuestions = new List<ConjugationQuestion>()
                 }
@@ -42,7 +42,14 @@ public static class DataStore
         _courses.Add(course);
         return course;
     }
-
+    public static void UpdateLessonTheory(int courseId, int lessonId, string theoryHtml)
+    {
+        var lesson = GetLesson(courseId, lessonId);
+        if (lesson != null)
+        {
+            lesson.TheoryHtml = theoryHtml ?? string.Empty;
+        }
+    }
     public static Lesson? GetLesson(int courseId, int lessonId)
     {
         var course = GetCourse(courseId);

@@ -449,6 +449,9 @@ body {
     overflow: hidden;
     transition: max-height 0.4s ease;
     padding: 0 16px;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
 }
 
 .theory-section.expanded .theory-content {
@@ -1110,7 +1113,82 @@ body {
 .btn-done:hover {
     background: #43A047;
 }
+/* ============================================
+   Quill
+   ============================================ */
+/* --- КНОПКА ЖИРНОГО ШРИФТА (Bold) --- */
+/* Скрываем стандартную иконку */
+.my-cool-action-bar .ql-bold svg {
+    display: none !important;
+}
+/* Подставляем букву Ж */
+.my-cool-action-bar .ql-bold::after {
+    content: "Ж";
+    font-weight: bold;
+    font-size: 16px;
+}
 
+.my-cool-action-bar .ql-italic svg {
+    display: none !important;
+}
+
+.my-cool-action-bar .ql-italic::after {
+    content: "К";
+    font-style: italic;
+    font-weight: 500;
+    font-size: 16px;
+}
+
+.my-cool-action-bar .ql-underline svg {
+    display: none !important;
+}
+
+.my-cool-action-bar .ql-underline::after {
+    content: "Ч";
+    text-decoration: underline;
+    font-size: 16px;
+}
+
+.quill-wrapper {
+    max-width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.ql-container.ql-snow {
+    height: 300px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; 
+}
+
+.ql-editor {
+    flex: 1;
+    overflow-y: auto; 
+    padding: 15px;
+    line-height: 1.6;
+}
+
+.ql-editor::-webkit-scrollbar {
+    width: 8px;
+}
+
+.ql-editor::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.ql-editor::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+.ql-editor::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
 /* ============================================
    RESPONSIVE
    ============================================ */
