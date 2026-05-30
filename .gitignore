@@ -428,3 +428,5 @@ FodyWeavers.xsd
 *.msm
 *.msp
 /CoursePlatform.Web/wwwroot/uploads/audio
+/CoursePlatform.Api/.env
+/CoursePlatform.Web/.env
