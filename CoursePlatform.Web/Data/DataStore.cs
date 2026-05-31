@@ -8,6 +8,7 @@ public static class DataStore
     private static int _nextCourseId = 100;
     private static int _nextLessonId = 100;
     private static int _nextCardId = 1000;
+    private static int _nextQuestionId = 5000;
 
     static DataStore()
     {
@@ -65,7 +66,25 @@ public static class DataStore
         lesson.Cards.Add(card);
         return card;
     }
+    public static ConjugationQuestion AddConjugationQuestion(int courseId, int lessonId, string russianSentence, string ossetianAnswer, string? hint)
+    {
+        var lesson = GetLesson(courseId, lessonId);
+        if (lesson == null) throw new Exception("Lesson not found");
 
+        var question = new ConjugationQuestion
+        {
+            Id = _nextQuestionId++,
+            RussianSentence = russianSentence.Trim(),
+            OssetianAnswer = ossetianAnswer.Trim(),
+            Hint = hint?.Trim(),
+            ImageUrl = null
+        };
+
+        lesson.ConjugationQuestions ??= new List<ConjugationQuestion>();
+
+        lesson.ConjugationQuestions.Add(question);
+        return question;
+    }
     private static void InitializeDefaultCourses()
     {
         _courses = new List<Course>

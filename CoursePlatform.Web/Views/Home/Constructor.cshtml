@@ -81,7 +81,82 @@
             </form>
         </div>
     </div>
+    <div class="constructor-cards font-app-base">
+        
 
+        @if (Model.ConjugationQuestions != null && Model.ConjugationQuestions.Count > 0)
+        {
+            <div class="table-header-flex">
+                <h3>Вопросы в тесте (@(Model.ConjugationQuestions?.Count ?? 0))</h3>
+            </div>
+            <div class="table-responsive-custom">
+                <table class="app-custom-table">
+                    <thead>
+                        <tr>
+                            <th><i class="fas fa-globe"></i> Задание (Русский)</th>
+                            <th><i class="fas fa-language"></i> Перевод (Осетинский)</th>
+                            <th><i class="fas fa-lightbulb"></i> Подсказка для ученика</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var q in Model.ConjugationQuestions)
+                        {
+                            <tr>
+                                <td class="table-cell-sentence">@q.RussianSentence</td>
+                                <td class="table-cell-answer"><strong>@q.OssetianAnswer</strong></td>
+                                <td class="table-cell-hint">
+                                    @if (!string.IsNullOrEmpty(q.Hint))
+                                    {
+                                        <span class="hint-badge">@q.Hint</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="hint-none">—</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+    <div class="add-card-section" style="margin-bottom: 30px;">
+        <button type="button" class="btn-add-card" id="btnShowQuestionForm" onclick="toggleQuestionForm()">
+            <i class="fas fa-plus"></i> Добавить вопрос в тест
+        </button>
+
+        <div id="questionForm" class="card-form" style="display:none;">
+            <form asp-action="AddConjugationQuestion" method="post">
+                <input type="hidden" name="courseId" value="@courseId" />
+                <input type="hidden" name="lessonId" value="@lessonId" />
+
+                <div class="form-group-custom">
+                    <label><i class="fas fa-globe"></i> Предложение на русском</label>
+                    <input type="text" name="russianSentence" class="input-custom" placeholder="Например: Я пил воду" required />
+                </div>
+
+                <div class="form-group-custom">
+                    <label><i class="fas fa-language"></i> Правильный перевод (на осетинском)</label>
+                    <input type="text" name="ossetianAnswer" class="input-custom" placeholder="Например: Æз дон бануазтон" required />
+                </div>
+
+                <div class="form-group-custom">
+                    <label><i class="fas fa-lightbulb"></i> Подсказка для ученика (необязательно)</label>
+                    <input type="text" name="hint" class="input-custom" placeholder="Например: нуазын → бануазтон (1 л., ед.ч.)" />
+                </div>
+
+                <button type="submit" class="btn-primary-custom" id="btnSaveQuestion">
+                    <i class="fas fa-save"></i> Сохранить
+                </button>
+                <button type="button" class="btn-cancel" onclick="toggleQuestionForm()">
+                    Отмена
+                </button>
+            </form>
+        </div>
+    </div>
+
+    
     <div class="constructor-footer">
         <a asp-action="Lessons" asp-route-courseId="@courseId" class="btn-primary-custom btn-done">
             <i class="fas fa-check"></i> Готово
@@ -106,7 +181,22 @@
             btn.style.display = 'flex';
         }
     }
+    function toggleQuestionForm() {
+        const form = document.getElementById('questionForm');
+        const btn = document.getElementById('btnShowQuestionForm');
 
+        if (form.style.display === 'none') {
+            form.style.display = 'block';
+            btn.style.display = 'none';
+            setTimeout(() => {
+                form.querySelector('input[name="russianSentence"]').focus();
+            }, 50);
+        } else {
+            form.style.display = 'none';
+            btn.style.display = 'block';
+            form.querySelector('form').reset(); 
+        }
+    }
     document.getElementById('russianInput').addEventListener('input', function() {
         const val = this.value.trim();
         const section = document.getElementById('imagePreviewSection');
