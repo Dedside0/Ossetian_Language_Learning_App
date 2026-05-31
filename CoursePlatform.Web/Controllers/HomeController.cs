@@ -69,7 +69,26 @@ public class HomeController : Controller
         DataStore.AddCard(courseId, lessonId, ossetianWord, russianWord, audioUrl);
         return RedirectToAction("Constructor", new { courseId, lessonId });
     }
-    
+    [HttpPost]
+    public IActionResult AddConjugationQuestion(int courseId, int lessonId, string russianSentence, string ossetianAnswer, string? hint)
+    {
+        if (string.IsNullOrWhiteSpace(russianSentence) || string.IsNullOrWhiteSpace(ossetianAnswer))
+        {
+            // Здесь можно добавить вывод ошибки через TempData, если поля пустые
+            return RedirectToAction("Constructor", new { courseId, lessonId });
+        }
+
+        try
+        {
+            DataStore.AddConjugationQuestion(courseId, lessonId, russianSentence, ossetianAnswer, hint);
+        }
+        catch (Exception ex)
+        {
+            // Обработка ошибки, если урок не найден
+        }
+
+        return RedirectToAction("Constructor", new { courseId, lessonId });
+    }
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {
