@@ -57,7 +57,12 @@ public class HomeController : Controller
         ViewBag.LessonId = lessonId;
         return View(lesson);
     }
-
+    [HttpPost]
+    public IActionResult UpdateTheory(int courseId, int lessonId, string theoryHtml)
+    {
+        DataStore.UpdateLessonTheory(courseId, lessonId, theoryHtml);
+        return RedirectToAction("Constructor", new { courseId, lessonId });
+    }
     [HttpPost]
     public IActionResult AddCard(int courseId, int lessonId, string ossetianWord, string russianWord, string audioUrl)
     {

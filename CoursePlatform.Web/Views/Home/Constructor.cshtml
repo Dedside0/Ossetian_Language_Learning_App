@@ -1,17 +1,51 @@
 @model Adam.Models.Lesson
 @{
-    ViewData["Title"] = "Конструктор карточек";
+    ViewData["Title"] = "Конструктор урока";
     var courseId = (int)ViewBag.CourseId;
     var lessonId = (int)ViewBag.LessonId;
 }
 
 <div class="page-header">
     <a asp-action="Lessons" asp-route-courseId="@courseId" class="back-btn"><i class="fas fa-arrow-left"></i> К урокам</a>
-    <h1>Конструктор карточек</h1>
+    <h1>Конструктор урока</h1>
     <p class="subtitle">@Model.Title</p>
 </div>
 
 <div class="constructor-page">
+
+    <div class="add-card-section" style="margin-bottom: 30px;">
+        <h3>Редактировать текст Теории</h3>
+
+        <form asp-action="UpdateTheory" method="post" id="theoryForm">
+            <input type="hidden" name="courseId" value="@courseId" />
+            <input type="hidden" name="lessonId" value="@lessonId" />
+
+            <input type="hidden" name="theoryHtml" id="theoryHtmlInput" />
+
+            <div class="quill-wrapper" style="border: 2px solid #ccc; border-radius: 10px; overflow: hidden;">
+
+                <div id="my-custom-toolbar" class="my-cool-action-bar" style="background: #f3f3f3; padding: 8px; border-bottom: 1px solid #ccc;">
+                    <button type = "button" class="ql-bold"><b>Ж</b></button>
+                    <button type="button" class="ql-italic"><i>К</i></button>
+                    <button type="button" class="ql-underline"><u>Ч</u></button>
+                    <select type="button" class="ql-header">
+                        <option selected>Обычный</option>
+                        <option value="1">Заголовок 1</option>
+                        <option value="2">Заголовок 2</option>
+                    </select>
+                </div>
+
+                <div id="editor-container" style="min-height: 200px; font-size: 16px; background: #fff; color: #000;">
+                    @Html.Raw(Model.TheoryHtml)
+                </div>
+            </div>
+
+            <button type="submit" class="btn-primary-custom" style="margin-top: 10px;">
+                <i class="fas fa-save"></i> Сохранить теорию
+            </button>
+        </form>
+    </div>
+
     @if (Model.Cards.Any())
     {
         <div class="constructor-cards">
@@ -73,7 +107,7 @@
                 </div>
 
                 <button type="submit" class="btn-primary-custom" id="btnSave">
-                    <i class="fas fa-save"></i> Сохранить
+                    <i class="fas fa-save"></i> Сохранить карточку
                 </button>
                 <button type="button" class="btn-cancel" onclick="toggleForm()">
                     Отмена
@@ -165,22 +199,41 @@
 </div>
 
 @section Scripts {
-<script>
-    let mediaRecorder;
-    let audioChunks = [];
-    let isRecording = false;
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
 
-    function toggleForm() {
-        const form = document.getElementById('cardForm');
-        const btn = document.getElementById('btnShowForm');
-        if (form.style.display === 'none') {
-            form.style.display = 'block';
-            btn.style.display = 'none';
-        } else {
-            form.style.display = 'none';
-            btn.style.display = 'flex';
+    <script>
+        // Инициализация редактора Quill с привязкой к кастомному тулбару
+        const quill = new Quill('#editor-container', {
+            theme: 'snow',
+            modules: {
+                // Говорим Quill искать кнопки внутри id
+                toolbar: '#my-custom-toolbar'
+            }
+        });
+
+        // Забирает текст перед сохранением.
+        document.getElementById('theoryForm').onsubmit = function() {
+            const theoryHtmlInput = document.getElementById('theoryHtmlInput');
+            theoryHtmlInput.value = quill.root.innerHTML;
+        };
+
+        let mediaRecorder;
+        let audioChunks = [];
+        let isRecording = false;
+
+        function toggleForm() {
+            const form = document.getElementById('cardForm');
+            const btn = document.getElementById('btnShowForm');
+            if (form.style.display === 'none') {
+                form.style.display = 'block';
+                btn.style.display = 'none';
+            } else {
+                form.style.display = 'none';
+                btn.style.display = 'flex';
+            }
         }
-    }
+    
     function toggleQuestionForm() {
         const form = document.getElementById('questionForm');
         const btn = document.getElementById('btnShowQuestionForm');
@@ -209,7 +262,7 @@
         }
     });
 
-            async function toggleRecording() {
+        async function toggleRecording() {
             const btn = document.getElementById('btnRecord');
             const status = document.getElementById('recordingStatus');
             const playback = document.getElementById('audioPlayback');
@@ -224,19 +277,14 @@
                     mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
 
                     mediaRecorder.onstop = async () => {
-                        // СОЗДАЁМ BLOB ИЗ СОБРАННЫХ ДАННЫХ
                         const blob = new Blob(audioChunks, { type: 'audio/webm' });
+                        console.log('Создан blob:', blob.size, 'bytes');
 
-                        console.log('Создан blob:', blob.size, 'bytes'); // Для отладки
-
-                        // Отправляем на сервер
                         const formData = new FormData();
                         formData.append('audioFile', blob, `recording_${Date.now()}.webm`);
 
                         try {
-                            // Показываем статус загрузки
                             status.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Загрузка...';
-
                             const response = await fetch('/api/Audio/upload', {
                                 method: 'POST',
                                 body: formData
@@ -259,12 +307,10 @@
                             status.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Ошибка';
                         }
 
-                        // Временная ссылка для прослушивания
                         const tempUrl = URL.createObjectURL(blob);
                         playback.src = tempUrl;
                         playback.style.display = 'block';
 
-                        // Останавливаем все треки микрофона
                         stream.getTracks().forEach(t => t.stop());
                     };
 
@@ -288,5 +334,5 @@
                 if (status) status.style.display = 'none';
             }
         }
-</script>
+    </script>
 }
