@@ -1188,6 +1188,7 @@ body {
 
 .ql-editor::-webkit-scrollbar-thumb:hover {
     background: #a8a8a8;
+}
 .table-responsive-custom {
     width: 100%;
     overflow-x: auto;
