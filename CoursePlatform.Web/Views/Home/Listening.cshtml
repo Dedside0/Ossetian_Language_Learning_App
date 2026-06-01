@@ -30,18 +30,22 @@
                 string inputClass = "";
                 bool? isCurrentCorrect = null;
 
+                // Настройка стилей валидации при наличии результатов проверки
                 if (isEvaluated && results.ContainsKey(task.Id))
                 {
                     isCurrentCorrect = results[task.Id].IsCorrect;
                     inputClass = isCurrentCorrect.Value ? "is-valid" : "is-invalid";
                 }
 
+                // Гарантируем, что путь к аудиофайлу всегда начинается с косой черты от корня сайта
+                var cleanAudioUrl = task.AudioUrl.StartsWith("/") ? task.AudioUrl : "/" + task.AudioUrl;
+
                 <div class="card mb-4 shadow-sm">
                     <div class="card-body">
                         <div class="d-flex align-items-center mb-3">
                             <span class="badge bg-secondary me-3" style="font-size: 1.1rem;">Задание @(i + 1)</span>
                             
-                            <audio id="audio-@task.Id" src="~/@task.AudioUrl"></audio>
+                            <audio id="audio-@task.Id" src="@cleanAudioUrl" preload="none"></audio>
                             <button type="button" class="btn btn-primary d-flex align-items-center" onclick="document.getElementById('audio-@task.Id').play()">
                                 🔊 Включить запись
                             </button>
@@ -55,6 +59,7 @@
                                    class="form-control form-control-lg @inputClass" 
                                    placeholder="Введите текст..." 
                                    autocomplete="off"
+                                   value="@(Context.Request.Form[$"userAnswers[{task.Id}]"])"
                                    @(isEvaluated ? "readonly" : "") />
                         </div>
 
