@@ -98,10 +98,13 @@
                 <div class="mini-cards-grid">
                     @foreach (var task in Model.ListeningTasks)
                     {
+                        // Исправляем и нормализуем путь к файлу перед выводом в плеер
+                        var cleanTaskAudioUrl = task.AudioUrl.StartsWith("/") ? task.AudioUrl : "/" + task.AudioUrl;
+
                         <div class="mini-card" style="display: flex; align-items: center; padding: 10px; gap: 15px;">
                             <div class="audio-preview-btn" style="background: #e91e63; color: white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer;" onclick="document.getElementById('task-audio-@task.Id').play()">
                                 <i class="fas fa-play"></i>
-                                <audio id="task-audio-@task.Id" src="~/@task.AudioUrl"></audio>
+                                <audio id="task-audio-@task.Id" src="@cleanTaskAudioUrl" preload="none"></audio>
                             </div>
                             <div class="mini-card-text">
                                 <strong>@task.AudioDecoding</strong>
@@ -167,7 +170,6 @@
     let audioChunks = [];
     let isRecording = false;
 
-    // Переключение между вкладками Лексики и Аудирования
     function switchTab(tabName, button) {
         document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
         document.querySelectorAll('.btn-tab').forEach(el => {
@@ -180,12 +182,11 @@
             button.style.background = '#007bff';
         } else {
             document.getElementById('listeningTabSection').style.display = 'block';
-            button.style.background = '#e91e63'; // Выделяем аудирование ярким цветом
+            button.style.background = '#e91e63';
         }
         button.classList.add('active');
     }
 
-    // Универсальный переключатель отображения форм
     function toggleForm(formId, btnElement) {
         const form = document.getElementById(formId);
         if (form.style.display === 'none') {
@@ -193,13 +194,11 @@
             btnElement.style.display = 'none';
         } else {
             form.style.display = 'none';
-            // Находим исходную кнопку открытия по ID структуры
             if (formId === 'cardForm') document.getElementById('btnShowForm').style.display = 'flex';
             if (formId === 'listeningForm') document.getElementById('btnShowListeningForm').style.display = 'flex';
         }
     }
 
-    // Генерация превью картинок для лексики
     document.getElementById('russianInput').addEventListener('input', function() {
         const val = this.value.trim();
         const section = document.getElementById('imagePreviewSection');
@@ -212,7 +211,6 @@
         }
     });
 
-    // Универсальный метод записи звука, работающий для обеих форм
     async function toggleRecording(hiddenFieldId, btnElement, statusId, playbackId) {
         const audioUrlField = document.getElementById(hiddenFieldId);
         const status = document.getElementById(statusId);
@@ -232,6 +230,7 @@
                     formData.append('audioFile', blob, `recording_${Date.now()}.webm`);
 
                     try {
+                        status.style.display = 'flex';
                         status.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Загрузка...';
 
                         const response = await fetch('/api/Audio/upload', {
@@ -275,7 +274,7 @@
                 mediaRecorder.stop();
             }
             isRecording = false;
-            btnElement.innerHTML = '<i class="fas fa-microphone"></i> Записать снова';
+            btnElement.innerHTML = '<i class="fas fa-microphone"></i> Забавить снова';
             btnElement.classList.remove('recording');
             status.style.display = 'none';
         }

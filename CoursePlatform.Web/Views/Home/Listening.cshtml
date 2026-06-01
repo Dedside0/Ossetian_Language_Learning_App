@@ -40,6 +40,13 @@
                 // Гарантируем, что путь к аудиофайлу всегда начинается с косой черты от корня сайта
                 var cleanAudioUrl = task.AudioUrl.StartsWith("/") ? task.AudioUrl : "/" + task.AudioUrl;
 
+                // Безопасное извлечение ответа пользователя без вызова исключения на GET-запросах
+                string userAnswer = "";
+                if (Context.Request.HasFormContentType && Context.Request.Form.ContainsKey($"userAnswers[{task.Id}]"))
+                {
+                    userAnswer = Context.Request.Form[$"userAnswers[{task.Id}]"];
+                }
+
                 <div class="card mb-4 shadow-sm">
                     <div class="card-body">
                         <div class="d-flex align-items-center mb-3">
@@ -59,7 +66,7 @@
                                    class="form-control form-control-lg @inputClass" 
                                    placeholder="Введите текст..." 
                                    autocomplete="off"
-                                   value="@(Context.Request.Form[$"userAnswers[{task.Id}]"])"
+                                   value="@userAnswer"
                                    @(isEvaluated ? "readonly" : "") />
                         </div>
 
