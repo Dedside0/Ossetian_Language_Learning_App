@@ -14,7 +14,7 @@
     {
         <div class="lesson-card">
             <div class="lesson-header">
-                <div class="lesson-number">@Model.Lessons.IndexOf(lesson) + 1</div>
+                <div class="lesson-number">@(Model.Lessons.IndexOf(lesson) + 1)</div>
                 <h3>@lesson.Title</h3>
             </div>
 
@@ -53,7 +53,24 @@
                     </a>
                 }
 
-                @if (!lesson.Cards.Any() && !lesson.ConjugationQuestions.Any())
+                @if (lesson.ListeningTasks != null && lesson.ListeningTasks.Any())
+                {
+                    <a asp-action="Listening" asp-route-courseId="@Model.Id" asp-route-lessonId="@lesson.Id" class="task-item">
+                        <div class="task-icon listening" style="background-color: #e91e63; color: white;"><i class="fas fa-headphones"></i></div>
+                        <div class="task-info">
+                            <h4>Аудирование</h4>
+                            <p>Тест · @lesson.ListeningTasks.Count заданий</p>
+                        </div>
+                        <i class="fas fa-play task-play"></i>
+                    </a>
+                }
+
+                @{
+                    bool hasCards = lesson.Cards.Any();
+                    bool hasConjugation = lesson.ConjugationQuestions.Any();
+                    bool hasListening = lesson.ListeningTasks != null && lesson.ListeningTasks.Any();
+                }
+                @if (!hasCards && !hasConjugation && !hasListening)
                 {
                     <div class="empty-state">
                         <i class="fas fa-inbox"></i>

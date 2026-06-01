@@ -12,40 +12,6 @@
 </div>
 
 <div class="constructor-page">
-
-    <div class="add-card-section" style="margin-bottom: 30px;">
-        <h3>Редактировать текст Теории</h3>
-
-        <form asp-action="UpdateTheory" method="post" id="theoryForm">
-            <input type="hidden" name="courseId" value="@courseId" />
-            <input type="hidden" name="lessonId" value="@lessonId" />
-
-            <input type="hidden" name="theoryHtml" id="theoryHtmlInput" />
-
-            <div class="quill-wrapper" style="border: 2px solid #ccc; border-radius: 10px; overflow: hidden;">
-
-                <div id="my-custom-toolbar" class="my-cool-action-bar" style="background: #f3f3f3; padding: 8px; border-bottom: 1px solid #ccc;">
-                    <button type = "button" class="ql-bold"><b>Ж</b></button>
-                    <button type="button" class="ql-italic"><i>К</i></button>
-                    <button type="button" class="ql-underline"><u>Ч</u></button>
-                    <select type="button" class="ql-header">
-                        <option selected>Обычный</option>
-                        <option value="1">Заголовок 1</option>
-                        <option value="2">Заголовок 2</option>
-                    </select>
-                </div>
-
-                <div id="editor-container" style="min-height: 200px; font-size: 16px; background: #fff; color: #000;">
-                    @Html.Raw(Model.TheoryHtml)
-                </div>
-            </div>
-
-            <button type="submit" class="btn-primary-custom" style="margin-top: 10px;">
-                <i class="fas fa-save"></i> Сохранить теорию
-            </button>
-        </form>
-    </div>
-
     @if (Model.Cards.Any())
     {
         <div class="constructor-cards">
@@ -67,44 +33,44 @@
         </div>
     }
 
-    <div class="add-card-section">
-        <button type="button" class="btn-add-card" id="btnShowForm" onclick="toggleForm()">
-            <i class="fas fa-plus"></i> Добавить карточку
-        </button>
+        <div class="add-card-section mt-3">
+            <button type="button" class="btn-add-card" id="btnShowForm" onclick="toggleForm('cardForm', this)">
+                <i class="fas fa-plus"></i> Добавить карточку
+            </button>
 
-        <div id="cardForm" class="card-form" style="display:none;">
-            <form asp-action="AddCard" method="post">
-                <input type="hidden" name="courseId" value="@courseId" />
-                <input type="hidden" name="lessonId" value="@lessonId" />
-                <input type="hidden" name="audioUrl" id="audioUrl" value="" />
+            <div id="cardForm" class="card-form" style="display:none;">
+                <form asp-action="AddCard" method="post">
+                    <input type="hidden" name="courseId" value="@courseId" />
+                    <input type="hidden" name="lessonId" value="@lessonId" />
+                    <input type="hidden" name="audioUrl" id="audioUrlCard" value="" />
 
-                <div class="form-group-custom">
-                    <label><i class="fas fa-language"></i> Слово на осетинском</label>
-                    <input type="text" name="ossetianWord" class="input-custom" placeholder="Например: Хæрын" required id="ossetianInput" />
-                </div>
-
-                <div class="form-group-custom">
-                    <label><i class="fas fa-globe"></i> Слово на русском</label>
-                    <input type="text" name="russianWord" class="input-custom" placeholder="Например: Есть" required id="russianInput" />
-                </div>
-
-                <div class="form-group-custom">
-                    <label><i class="fas fa-microphone"></i> Запись аудио</label>
-                    <div class="audio-recorder">
-                        <button type="button" class="btn-record" id="btnRecord" onclick="toggleRecording()">
-                            <i class="fas fa-microphone"></i> Записать произношение
-                        </button>
-                        <div id="recordingStatus" class="recording-status" style="display:none;">
-                            <i class="fas fa-circle recording-dot"></i> Запись...
-                        </div>
-                        <audio id="audioPlayback" controls style="display:none; width:100%; margin-top:8px;"></audio>
+                    <div class="form-group-custom">
+                        <label><i class="fas fa-language"></i> Слово на осетинском</label>
+                        <input type="text" name="ossetianWord" class="input-custom" placeholder="Например: Хæрын" required />
                     </div>
-                </div>
 
-                <div class="form-group-custom" id="imagePreviewSection" style="display:none;">
-                    <label>Превью изображения</label>
-                    <div class="image-preview" id="imagePreview"></div>
-                </div>
+                    <div class="form-group-custom">
+                        <label><i class="fas fa-globe"></i> Слово на русском</label>
+                        <input type="text" name="russianWord" class="input-custom" placeholder="Например: Есть" required id="russianInput" />
+                    </div>
+
+                    <div class="form-group-custom">
+                        <label><i class="fas fa-microphone"></i> Запись аудио</label>
+                        <div class="audio-recorder">
+                            <button type="button" class="btn-record" onclick="toggleRecording('audioUrlCard', this, 'recordingStatusCard', 'audioPlaybackCard')">
+                                <i class="fas fa-microphone"></i> Записать произношение
+                            </button>
+                            <div id="recordingStatusCard" class="recording-status" style="display:none;">
+                                <i class="fas fa-circle recording-dot"></i> Запись...
+                            </div>
+                            <audio id="audioPlaybackCard" controls style="display:none; width:100%; margin-top:8px;"></audio>
+                        </div>
+                    </div>
+
+                    <div class="form-group-custom" id="imagePreviewSection" style="display:none;">
+                        <label>Превью изображения</label>
+                        <div class="image-preview" id="imagePreview"></div>
+                    </div>
 
                 <button type="submit" class="btn-primary-custom" id="btnSave">
                     <i class="fas fa-save"></i> Сохранить карточку
@@ -268,13 +234,13 @@
             const playback = document.getElementById('audioPlayback');
             const audioUrlField = document.getElementById('audioUrl');
 
-            if (!isRecording) {
-                try {
-                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                    mediaRecorder = new MediaRecorder(stream);
-                    audioChunks = [];
+        if (!isRecording) {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                audioChunks = [];
 
-                    mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+                mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
 
                     mediaRecorder.onstop = async () => {
                         const blob = new Blob(audioChunks, { type: 'audio/webm' });
@@ -290,22 +256,20 @@
                                 body: formData
                             });
 
-                            const result = await response.json();
-                            console.log('Ответ сервера:', result);
+                        const result = await response.json();
 
-                            if (result.success && audioUrlField) {
-                                audioUrlField.value = result.fileUrl;
-                                status.innerHTML = '<i class="fas fa-check-circle"></i> Сохранено!';
-                                setTimeout(() => {
-                                    if (status) status.style.display = 'none';
-                                }, 1500);
-                            } else {
-                                status.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Ошибка сервера';
-                            }
-                        } catch (err) {
-                            console.error('Ошибка загрузки:', err);
-                            status.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Ошибка';
+                        if (result.success && audioUrlField) {
+                            audioUrlField.value = result.fileUrl;
+                            status.innerHTML = '<i class="fas fa-check-circle"></i> Сохранено!';
+                            setTimeout(() => {
+                                status.style.display = 'none';
+                            }, 1500);
+                        } else {
+                            status.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Ошибка сервера';
                         }
+                    } catch (err) {
+                        status.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Ошибка';
+                    }
 
                         const tempUrl = URL.createObjectURL(blob);
                         playback.src = tempUrl;
