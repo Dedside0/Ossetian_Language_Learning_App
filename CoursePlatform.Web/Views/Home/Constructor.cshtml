@@ -1,6 +1,6 @@
 @model Adam.Models.Lesson
 @{
-    ViewData["Title"] = "Конструктор контента";
+    ViewData["Title"] = "Конструктор урока";
     var courseId = (int)ViewBag.CourseId;
     var lessonId = (int)ViewBag.LessonId;
 }
@@ -12,37 +12,26 @@
 </div>
 
 <div class="constructor-page">
-
-    <div class="constructor-tabs mb-4" style="display: flex; gap: 10px; border-bottom: 2px solid #eee; padding-bottom: 10px;">
-        <button type="button" class="btn-tab active" onclick="switchTab('cardsTab', this)" style="padding: 10px 20px; border: none; background: #007bff; color: white; border-radius: 5px; cursor: pointer;">
-            <i class="fas fa-clone"></i> Карточки слов
-        </button>
-        <button type="button" class="btn-tab" onclick="switchTab('listeningTab', this)" style="padding: 10px 20px; border: none; background: #6c757d; color: white; border-radius: 5px; cursor: pointer;">
-            <i class="fas fa-headphones"></i> Аудирование
-        </button>
-    </div>
-
-    <div id="cardsTabSection" class="tab-content">
-        @if (Model.Cards.Any())
-        {
-            <div class="constructor-cards">
-                <h3>Добавленные карточки (@Model.Cards.Count)</h3>
-                <div class="mini-cards-grid">
-                    @foreach (var card in Model.Cards)
-                    {
-                        <div class="mini-card">
-                            <div class="mini-card-img">
-                                <img src="@card.ImageUrl" alt="@card.RussianWord" onerror="this.parentElement.innerHTML='<i class=\'fas fa-image\'></i>'" />
-                            </div>
-                            <div class="mini-card-text">
-                                <strong>@card.OssetianWord</strong>
-                                <span>@card.RussianWord</span>
-                            </div>
+    @if (Model.Cards.Any())
+    {
+        <div class="constructor-cards">
+            <h3>Добавленные карточки (@Model.Cards.Count)</h3>
+            <div class="mini-cards-grid">
+                @foreach (var card in Model.Cards)
+                {
+                    <div class="mini-card">
+                        <div class="mini-card-img">
+                            <img src="@card.ImageUrl" alt="@card.RussianWord" onerror="this.parentElement.innerHTML='<i class=\'fas fa-image\'></i>'" />
                         </div>
-                    }
-                </div>
+                        <div class="mini-card-text">
+                            <strong>@card.OssetianWord</strong>
+                            <span>@card.RussianWord</span>
+                        </div>
+                    </div>
+                }
             </div>
-        }
+        </div>
+    }
 
         <div class="add-card-section mt-3">
             <button type="button" class="btn-add-card" id="btnShowForm" onclick="toggleForm('cardForm', this)">
@@ -83,81 +72,92 @@
                         <div class="image-preview" id="imagePreview"></div>
                     </div>
 
-                    <button type="submit" class="btn-primary-custom"><i class="fas fa-save"></i> Сохранить</button>
-                    <button type="button" class="btn-cancel" onclick="toggleForm('cardForm', document.getElementById('btnShowForm'))">Отмена</button>
-                </form>
-            </div>
+                <button type="submit" class="btn-primary-custom" id="btnSave">
+                    <i class="fas fa-save"></i> Сохранить карточку
+                </button>
+                <button type="button" class="btn-cancel" onclick="toggleForm()">
+                    Отмена
+                </button>
+            </form>
         </div>
     </div>
+    <div class="constructor-cards font-app-base">
+        
 
-    <div id="listeningTabSection" class="tab-content" style="display: none;">
-        @if (Model.ListeningTasks != null && Model.ListeningTasks.Any())
+        @if (Model.ConjugationQuestions != null && Model.ConjugationQuestions.Count > 0)
         {
-            <div class="constructor-cards">
-                <h3>Добавленные задания на слух (@Model.ListeningTasks.Count)</h3>
-                <div class="mini-cards-grid">
-                    @foreach (var task in Model.ListeningTasks)
-                    {
-                        // Исправляем и нормализуем путь к файлу перед выводом в плеер
-                        var cleanTaskAudioUrl = task.AudioUrl.StartsWith("/") ? task.AudioUrl : "/" + task.AudioUrl;
-
-                        <div class="mini-card" style="display: flex; align-items: center; padding: 10px; gap: 15px;">
-                            <div class="audio-preview-btn" style="background: #e91e63; color: white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer;" onclick="document.getElementById('task-audio-@task.Id').play()">
-                                <i class="fas fa-play"></i>
-                                <audio id="task-audio-@task.Id" src="@cleanTaskAudioUrl" preload="none"></audio>
-                            </div>
-                            <div class="mini-card-text">
-                                <strong>@task.AudioDecoding</strong>
-                                <span>@task.RussianTranslation</span>
-                            </div>
-                        </div>
-                    }
-                </div>
+            <div class="table-header-flex">
+                <h3>Вопросы в тесте (@(Model.ConjugationQuestions?.Count ?? 0))</h3>
+            </div>
+            <div class="table-responsive-custom">
+                <table class="app-custom-table">
+                    <thead>
+                        <tr>
+                            <th><i class="fas fa-globe"></i> Задание (Русский)</th>
+                            <th><i class="fas fa-language"></i> Перевод (Осетинский)</th>
+                            <th><i class="fas fa-lightbulb"></i> Подсказка для ученика</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var q in Model.ConjugationQuestions)
+                        {
+                            <tr>
+                                <td class="table-cell-sentence">@q.RussianSentence</td>
+                                <td class="table-cell-answer"><strong>@q.OssetianAnswer</strong></td>
+                                <td class="table-cell-hint">
+                                    @if (!string.IsNullOrEmpty(q.Hint))
+                                    {
+                                        <span class="hint-badge">@q.Hint</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="hint-none">—</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
             </div>
         }
+    </div>
+    <div class="add-card-section" style="margin-bottom: 30px;">
+        <button type="button" class="btn-add-card" id="btnShowQuestionForm" onclick="toggleQuestionForm()">
+            <i class="fas fa-plus"></i> Добавить вопрос в тест
+        </button>
 
-        <div class="add-card-section mt-3">
-            <button type="button" class="btn-add-card" id="btnShowListeningForm" onclick="toggleForm('listeningForm', this)">
-                <i class="fas fa-plus"></i> Добавить задание на аудирование
-            </button>
+        <div id="questionForm" class="card-form" style="display:none;">
+            <form asp-action="AddConjugationQuestion" method="post">
+                <input type="hidden" name="courseId" value="@courseId" />
+                <input type="hidden" name="lessonId" value="@lessonId" />
 
-            <div id="listeningForm" class="card-form" style="display:none;">
-                <form asp-action="AddListeningTask" method="post">
-                    <input type="hidden" name="courseId" value="@courseId" />
-                    <input type="hidden" name="lessonId" value="@lessonId" />
-                    <input type="hidden" name="audioUrl" id="audioUrlListening" value="" />
+                <div class="form-group-custom">
+                    <label><i class="fas fa-globe"></i> Предложение на русском</label>
+                    <input type="text" name="russianSentence" class="input-custom" placeholder="Например: Я пил воду" required />
+                </div>
 
-                    <div class="form-group-custom">
-                        <label><i class="fas fa-language"></i> Текст аудио (Правильный ответ на осетинском)</label>
-                        <input type="text" name="audioDecoding" class="input-custom" placeholder="Например: Æз бахордтон" required />
-                    </div>
+                <div class="form-group-custom">
+                    <label><i class="fas fa-language"></i> Правильный перевод (на осетинском)</label>
+                    <input type="text" name="ossetianAnswer" class="input-custom" placeholder="Например: Æз дон бануазтон" required />
+                </div>
 
-                    <div class="form-group-custom">
-                        <label><i class="fas fa-globe"></i> Перевод на русский (Подсказка)</label>
-                        <input type="text" name="russianTranslation" class="input-custom" placeholder="Например: Я поел" />
-                    </div>
+                <div class="form-group-custom">
+                    <label><i class="fas fa-lightbulb"></i> Подсказка для ученика (необязательно)</label>
+                    <input type="text" name="hint" class="input-custom" placeholder="Например: нуазын → бануазтон (1 л., ед.ч.)" />
+                </div>
 
-                    <div class="form-group-custom">
-                        <label><i class="fas fa-microphone"></i> Надиктуйте фразу</label>
-                        <div class="audio-recorder">
-                            <button type="button" class="btn-record" onclick="toggleRecording('audioUrlListening', this, 'recordingStatusListening', 'audioPlaybackListening')">
-                                <i class="fas fa-microphone"></i> Записать фразу целиком
-                            </button>
-                            <div id="recordingStatusListening" class="recording-status" style="display:none;">
-                                <i class="fas fa-circle recording-dot"></i> Запись...
-                            </div>
-                            <audio id="audioPlaybackListening" controls style="display:none; width:100%; margin-top:8px;"></audio>
-                        </div>
-                    </div>
-
-                    <button type="submit" class="btn-primary-custom"><i class="fas fa-save"></i> Сохранить задание</button>
-                    <button type="button" class="btn-cancel" onclick="toggleForm('listeningForm', document.getElementById('btnShowListeningForm'))">Отмена</button>
-                </form>
-            </div>
+                <button type="submit" class="btn-primary-custom" id="btnSaveQuestion">
+                    <i class="fas fa-save"></i> Сохранить
+                </button>
+                <button type="button" class="btn-cancel" onclick="toggleQuestionForm()">
+                    Отмена
+                </button>
+            </form>
         </div>
     </div>
 
-    <div class="constructor-footer mt-4">
+    
+    <div class="constructor-footer">
         <a asp-action="Lessons" asp-route-courseId="@courseId" class="btn-primary-custom btn-done">
             <i class="fas fa-check"></i> Готово
         </a>
@@ -165,40 +165,57 @@
 </div>
 
 @section Scripts {
-<script>
-    let mediaRecorder;
-    let audioChunks = [];
-    let isRecording = false;
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
 
-    function switchTab(tabName, button) {
-        document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
-        document.querySelectorAll('.btn-tab').forEach(el => {
-            el.style.background = '#6c757d';
-            el.classList.remove('active');
+    <script>
+        // Инициализация редактора Quill с привязкой к кастомному тулбару
+        const quill = new Quill('#editor-container', {
+            theme: 'snow',
+            modules: {
+                // Говорим Quill искать кнопки внутри id
+                toolbar: '#my-custom-toolbar'
+            }
         });
 
-        if (tabName === 'cardsTab') {
-            document.getElementById('cardsTabSection').style.display = 'block';
-            button.style.background = '#007bff';
-        } else {
-            document.getElementById('listeningTabSection').style.display = 'block';
-            button.style.background = '#e91e63';
-        }
-        button.classList.add('active');
-    }
+        // Забирает текст перед сохранением.
+        document.getElementById('theoryForm').onsubmit = function() {
+            const theoryHtmlInput = document.getElementById('theoryHtmlInput');
+            theoryHtmlInput.value = quill.root.innerHTML;
+        };
 
-    function toggleForm(formId, btnElement) {
-        const form = document.getElementById(formId);
+        let mediaRecorder;
+        let audioChunks = [];
+        let isRecording = false;
+
+        function toggleForm() {
+            const form = document.getElementById('cardForm');
+            const btn = document.getElementById('btnShowForm');
+            if (form.style.display === 'none') {
+                form.style.display = 'block';
+                btn.style.display = 'none';
+            } else {
+                form.style.display = 'none';
+                btn.style.display = 'flex';
+            }
+        }
+    
+    function toggleQuestionForm() {
+        const form = document.getElementById('questionForm');
+        const btn = document.getElementById('btnShowQuestionForm');
+
         if (form.style.display === 'none') {
             form.style.display = 'block';
-            btnElement.style.display = 'none';
+            btn.style.display = 'none';
+            setTimeout(() => {
+                form.querySelector('input[name="russianSentence"]').focus();
+            }, 50);
         } else {
             form.style.display = 'none';
-            if (formId === 'cardForm') document.getElementById('btnShowForm').style.display = 'flex';
-            if (formId === 'listeningForm') document.getElementById('btnShowListeningForm').style.display = 'flex';
+            btn.style.display = 'block';
+            form.querySelector('form').reset(); 
         }
     }
-
     document.getElementById('russianInput').addEventListener('input', function() {
         const val = this.value.trim();
         const section = document.getElementById('imagePreviewSection');
@@ -211,10 +228,11 @@
         }
     });
 
-    async function toggleRecording(hiddenFieldId, btnElement, statusId, playbackId) {
-        const audioUrlField = document.getElementById(hiddenFieldId);
-        const status = document.getElementById(statusId);
-        const playback = document.getElementById(playbackId);
+        async function toggleRecording() {
+            const btn = document.getElementById('btnRecord');
+            const status = document.getElementById('recordingStatus');
+            const playback = document.getElementById('audioPlayback');
+            const audioUrlField = document.getElementById('audioUrl');
 
         if (!isRecording) {
             try {
@@ -224,19 +242,19 @@
 
                 mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
 
-                mediaRecorder.onstop = async () => {
-                    const blob = new Blob(audioChunks, { type: 'audio/webm' });
-                    const formData = new FormData();
-                    formData.append('audioFile', blob, `recording_${Date.now()}.webm`);
+                    mediaRecorder.onstop = async () => {
+                        const blob = new Blob(audioChunks, { type: 'audio/webm' });
+                        console.log('Создан blob:', blob.size, 'bytes');
 
-                    try {
-                        status.style.display = 'flex';
-                        status.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Загрузка...';
+                        const formData = new FormData();
+                        formData.append('audioFile', blob, `recording_${Date.now()}.webm`);
 
-                        const response = await fetch('/api/Audio/upload', {
-                            method: 'POST',
-                            body: formData
-                        });
+                        try {
+                            status.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Загрузка...';
+                            const response = await fetch('/api/Audio/upload', {
+                                method: 'POST',
+                                body: formData
+                            });
 
                         const result = await response.json();
 
@@ -253,31 +271,32 @@
                         status.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Ошибка';
                     }
 
-                    const tempUrl = URL.createObjectURL(blob);
-                    playback.src = tempUrl;
-                    playback.style.display = 'block';
+                        const tempUrl = URL.createObjectURL(blob);
+                        playback.src = tempUrl;
+                        playback.style.display = 'block';
 
-                    stream.getTracks().forEach(t => t.stop());
-                };
+                        stream.getTracks().forEach(t => t.stop());
+                    };
 
-                mediaRecorder.start();
-                isRecording = true;
-                btnElement.innerHTML = '<i class="fas fa-stop"></i> Остановить';
-                btnElement.classList.add('recording');
-                status.style.display = 'flex';
-                status.innerHTML = '<i class="fas fa-circle recording-dot"></i> Запись...';
-            } catch (err) {
-                alert('Не удалось получить доступ к микрофону. Проверьте разрешения.');
+                    mediaRecorder.start();
+                    isRecording = true;
+                    btn.innerHTML = '<i class="fas fa-stop"></i> Остановить';
+                    btn.classList.add('recording');
+                    status.style.display = 'flex';
+                    status.innerHTML = '<i class="fas fa-circle recording-dot"></i> Запись...';
+                } catch (err) {
+                    console.error('Ошибка доступа к микрофону:', err);
+                    alert('Не удалось получить доступ к микрофону. Проверьте разрешения.');
+                }
+            } else {
+                if (mediaRecorder) {
+                    mediaRecorder.stop();
+                }
+                isRecording = false;
+                btn.innerHTML = '<i class="fas fa-microphone"></i> Записать снова';
+                btn.classList.remove('recording');
+                if (status) status.style.display = 'none';
             }
-        } else {
-            if (mediaRecorder) {
-                mediaRecorder.stop();
-            }
-            isRecording = false;
-            btnElement.innerHTML = '<i class="fas fa-microphone"></i> Забавить снова';
-            btnElement.classList.remove('recording');
-            status.style.display = 'none';
         }
-    }
-</script>
+    </script>
 }

@@ -108,8 +108,12 @@ public class HomeController : Controller
         ViewBag.LessonId = lessonId;
         return View(lesson);
     }
-
-    // POST: Добавление новой карточки слова через конструктор
+    [HttpPost]
+    public IActionResult UpdateTheory(int courseId, int lessonId, string theoryHtml)
+    {
+        DataStore.UpdateLessonTheory(courseId, lessonId, theoryHtml);
+        return RedirectToAction("Constructor", new { courseId, lessonId });
+    }
     [HttpPost]
     public IActionResult AddCard(int courseId, int lessonId, string ossetianWord, string russianWord, string audioUrl)
     {
@@ -121,23 +125,26 @@ public class HomeController : Controller
         DataStore.AddCard(courseId, lessonId, ossetianWord, russianWord, audioUrl);
         return RedirectToAction("Constructor", new { courseId, lessonId });
     }
-
-    // POST: Добавление нового задания на аудирование через конструктор
     [HttpPost]
-    public IActionResult AddListeningTask(int courseId, int lessonId, string audioUrl, string audioDecoding, string russianTranslation)
+    public IActionResult AddConjugationQuestion(int courseId, int lessonId, string russianSentence, string ossetianAnswer, string? hint)
     {
-        // Проверка обязательных полей перед добавлением в хранилище данных
-        if (string.IsNullOrWhiteSpace(audioUrl) || string.IsNullOrWhiteSpace(audioDecoding))
+        if (string.IsNullOrWhiteSpace(russianSentence) || string.IsNullOrWhiteSpace(ossetianAnswer))
         {
-            TempData["ErrorMessage"] = "Поля 'Ссылка на аудио' и 'Текст аудио' обязательны для заполнения.";
+            // Здесь можно добавить вывод ошибки через TempData, если поля пустые
             return RedirectToAction("Constructor", new { courseId, lessonId });
         }
 
-        DataStore.AddListeningTask(courseId, lessonId, audioUrl, audioDecoding, russianTranslation);
+        try
+        {
+            DataStore.AddConjugationQuestion(courseId, lessonId, russianSentence, ossetianAnswer, hint);
+        }
+        catch (Exception ex)
+        {
+            // Обработка ошибки, если урок не найден
+        }
+
         return RedirectToAction("Constructor", new { courseId, lessonId });
     }
-
-    // Обработка непредвиденных ошибок приложения
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {
