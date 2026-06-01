@@ -1,0 +1,98 @@
+﻿@model List<Adam.Models.ListeningTask>
+
+@{
+    ViewData["Title"] = "Аудирование";
+    var results = ViewBag.ValidationResults as Dictionary<int, (bool IsCorrect, string CorrectText)>;
+    bool isEvaluated = results != null;
+}
+
+<div class="container mt-4" style="max-width: 800px;">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Задание на аудирование (Хъусæн куыст)</h2>
+        <a asp-action="Lessons" asp-route-courseId="@ViewBag.CourseId" class="btn btn-outline-secondary">Назад к урокам</a>
+    </div>
+
+    @if (Model == null || !Model.Any())
+    {
+        <div class="alert alert-warning">
+            В этом уроке еще не созданы задания на прослушивание.
+        </div>
+    }
+    else
+    {
+        <form asp-action="VerifyListeningAnswers" method="post">
+            <input type="hidden" name="courseId" value="@ViewBag.CourseId" />
+            <input type="hidden" name="lessonId" value="@ViewBag.LessonId" />
+
+            @for (int i = 0; i < Model.Count; i++)
+            {
+                var task = Model[i];
+                string inputClass = "";
+                bool? isCurrentCorrect = null;
+
+                if (isEvaluated && results.ContainsKey(task.Id))
+                {
+                    isCurrentCorrect = results[task.Id].IsCorrect;
+                    inputClass = isCurrentCorrect.Value ? "is-valid" : "is-invalid";
+                }
+
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <span class="badge bg-secondary me-3" style="font-size: 1.1rem;">Задание @(i + 1)</span>
+                            
+                            <audio id="audio-@task.Id" src="~/@task.AudioUrl"></audio>
+                            <button type="button" class="btn btn-primary d-flex align-items-center" onclick="document.getElementById('audio-@task.Id').play()">
+                                🔊 Включить запись
+                            </button>
+                        </div>
+
+                        <div class="mb-2">
+                            <label class="form-label font-weight-bold">Послушайте запись и напишите услышанное на осетинском:</label>
+                            
+                            <input type="text" 
+                                   name="userAnswers[@task.Id]" 
+                                   class="form-control form-control-lg @inputClass" 
+                                   placeholder="Введите текст..." 
+                                   autocomplete="off"
+                                   @(isEvaluated ? "readonly" : "") />
+                        </div>
+
+                        @if (isEvaluated && isCurrentCorrect.HasValue)
+                        {
+                            if (isCurrentCorrect.Value)
+                            {
+                                <div class="text-success mt-1">
+                                    ✓ Раст у! (Правильно!) — <em>@task.RussianTranslation</em>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="text-danger mt-1">
+                                    ✗ Æнæраст (Ошибка). Правильный ответ: <strong>@task.AudioDecoding</strong>
+                                    @if (!string.IsNullOrEmpty(task.RussianTranslation))
+                                    {
+                                        <span>— (@task.RussianTranslation)</span>
+                                    }
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+            }
+
+            <div class="mt-4 mb-5">
+                @if (!isEvaluated)
+                {
+                    <button type="submit" class="btn btn-success btn-lg w-100">Бæрæг кæнын (Проверить ответы)</button>
+                }
+                else
+                {
+                    <a asp-action="Listening" asp-route-courseId="@ViewBag.CourseId" asp-route-lessonId="@ViewBag.LessonId" class="btn btn-primary btn-lg w-100">
+                        Повторить тест
+                    </a>
+                }
+            </div>
+        </form>
+    }
+</div>

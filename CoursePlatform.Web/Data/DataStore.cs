@@ -9,6 +9,8 @@ public static class DataStore
     private static int _nextLessonId = 100;
     private static int _nextCardId = 1000;
 
+    private static int _nextListeningTaskId = 5000;
+
     static DataStore()
     {
         InitializeDefaultCourses();
@@ -17,6 +19,12 @@ public static class DataStore
     public static List<Course> GetCourses() => _courses;
 
     public static Course? GetCourse(int id) => _courses.FirstOrDefault(c => c.Id == id);
+
+    public static Lesson? GetLesson(int courseId, int lessonId)
+    {
+        var course = GetCourse(courseId);
+        return course?.Lessons.FirstOrDefault(l => l.Id == lessonId);
+    }
 
     public static Course AddCourse(string title, string description)
     {
@@ -33,20 +41,16 @@ public static class DataStore
                 {
                     Id = _nextLessonId++,
                     Title = "Урок 1",
-                    TheoryHtml = "<p>Добавьте задания в этот урок с помощью конструктора карточек.</p>",
+                    TheoryHtml = "<p>Добавьте задания в этот урок с помощью конструктора.</p>",
                     Cards = new List<Card>(),
-                    ConjugationQuestions = new List<ConjugationQuestion>()
+                    ConjugationQuestions = new List<ConjugationQuestion>(),
+                    // Инициализируем пустой список для аудирования в новом курсе
+                    ListeningTasks = new List<ListeningTask>()
                 }
             }
         };
         _courses.Add(course);
         return course;
-    }
-
-    public static Lesson? GetLesson(int courseId, int lessonId)
-    {
-        var course = GetCourse(courseId);
-        return course?.Lessons.FirstOrDefault(l => l.Id == lessonId);
     }
 
     public static Card AddCard(int courseId, int lessonId, string ossetianWord, string russianWord, string audioUrl)
@@ -64,6 +68,24 @@ public static class DataStore
         };
         lesson.Cards.Add(card);
         return card;
+    }
+
+    // МЕТОД ДЛЯ ДОБАВЛЕНИЯ ЗАДАНИЯ НА АУДИРОВАНИЕ
+    public static ListeningTask AddListeningTask(int courseId, int lessonId, string audioUrl, string audioDecoding, string? russianTranslation)
+    {
+        var lesson = GetLesson(courseId, lessonId);
+        if (lesson == null) throw new Exception("Lesson not found");
+
+        var task = new ListeningTask
+        {
+            Id = _nextListeningTaskId++,
+            AudioUrl = audioUrl,
+            AudioDecoding = audioDecoding,
+            RussianTranslation = russianTranslation
+        };
+
+        lesson.ListeningTasks.Add(task);
+        return task;
     }
 
     private static void InitializeDefaultCourses()
@@ -84,7 +106,15 @@ public static class DataStore
                         Title = "Урок 1. Основные глаголы",
                         TheoryHtml = GetTheoryHtml(),
                         Cards = GetDefaultCards(),
-                        ConjugationQuestions = GetConjugationQuestions()
+                        ConjugationQuestions = GetConjugationQuestions(),
+                        // Задания на аудирование для Глаголов
+                        ListeningTasks = new List<ListeningTask>
+                        {
+                            new ListeningTask { Id = 5001, AudioUrl = "audio/verbs/ba_khordton.mp3", AudioDecoding = "Æз бахордтон", RussianTranslation = "Я поел" },
+                            new ListeningTask { Id = 5002, AudioUrl = "audio/verbs/ba_nuaztai.mp3", AudioDecoding = "Ды дон бануазтай", RussianTranslation = "Ты пил воду" },
+                            new ListeningTask { Id = 5003, AudioUrl = "audio/verbs/atsydi.mp3", AudioDecoding = "Уый ацыди", RussianTranslation = "Он ушёл" },
+                            new ListeningTask { Id = 5004, AudioUrl = "audio/verbs/dzyrdtoi.mp3", AudioDecoding = "Уыдон дзырдтой", RussianTranslation = "Они говорили" }
+                        }
                     }
                 }
             },
@@ -104,7 +134,7 @@ public static class DataStore
                             "<p>Осетинский язык имеет богатую систему приветствий, которые меняются в зависимости от времени суток и ситуации.</p>" +
                             "<ul><li><strong>Салам!</strong> — Привет! (неформальное)</li>" +
                             "<li><strong>Де бон хорз!</strong> — Добрый день!</li>" +
-                            "<li><strong>Дæ изæр хорз!</strong> — Добрый вечер!</li></ul>",
+                            "<li><strong>Дæ изæр хорз!</strong> — Добрый evening!</li></ul>",
                         Cards = new List<Card>
                         {
                             new Card { Id = 100, OssetianWord = "Салам", RussianWord = "Привет", ImageUrl = "https://via.placeholder.com/300x200/4CAF50/fff?text=Привет" },
@@ -113,7 +143,15 @@ public static class DataStore
                             new Card { Id = 103, OssetianWord = "Хорз бон", RussianWord = "Хорошего дня", ImageUrl = "https://via.placeholder.com/300x200/FF9800/fff?text=Хорошего+дня" },
                             new Card { Id = 104, OssetianWord = "Фæндараст", RussianWord = "Счастливого пути", ImageUrl = "https://via.placeholder.com/300x200/E91E63/fff?text=Счастливого+пути" },
                         },
-                        ConjugationQuestions = new List<ConjugationQuestion>()
+                        ConjugationQuestions = new List<ConjugationQuestion>(),
+                        // Задания на аудирование для Приветствий
+                        ListeningTasks = new List<ListeningTask>
+                        {
+                            new ListeningTask { Id = 5101, AudioUrl = "audio/greetings/salam.mp3", AudioDecoding = "Салам", RussianTranslation = "Привет" },
+                            new ListeningTask { Id = 5102, AudioUrl = "audio/greetings/de_bon_horz.mp3", AudioDecoding = "Де бон хорз", RussianTranslation = "Добрый день" },
+                            new ListeningTask { Id = 5103, AudioUrl = "audio/greetings/da_izar_horz.mp3", AudioDecoding = "Дæ изæр хорз", RussianTranslation = "Добрый вечер" },
+                            new ListeningTask { Id = 5104, AudioUrl = "audio/greetings/fandarast.mp3", AudioDecoding = "Фæндараст", RussianTranslation = "Счастливого пути" }
+                        }
                     }
                 }
             },
@@ -145,12 +183,45 @@ public static class DataStore
                             new Card { Id = 208, OssetianWord = "Фараст", RussianWord = "Девять", ImageUrl = "https://via.placeholder.com/300x200/009688/fff?text=9" },
                             new Card { Id = 209, OssetianWord = "Дæс", RussianWord = "Десять", ImageUrl = "https://via.placeholder.com/300x200/4CAF50/fff?text=10" },
                         },
-                        ConjugationQuestions = new List<ConjugationQuestion>()
+                        ConjugationQuestions = new List<ConjugationQuestion>(),
+                        // Задания на аудирование для Чисел
+                        ListeningTasks = new List<ListeningTask>
+                        {
+                            new ListeningTask { Id = 5201, AudioUrl = "audio/numbers/iu.mp3", AudioDecoding = "Иу", RussianTranslation = "Один" },
+                            new ListeningTask { Id = 5202, AudioUrl = "audio/numbers/dyuuae.mp3", AudioDecoding = "Дыууæ", RussianTranslation = "Два" },
+                            new ListeningTask { Id = 5203, AudioUrl = "audio/numbers/aertae.mp3", AudioDecoding = "Æртæ", RussianTranslation = "Три" },
+                            new ListeningTask { Id = 5204, AudioUrl = "audio/numbers/daes.mp3", AudioDecoding = "Дæс", RussianTranslation = "Десять" }
+                        }
                     }
                 }
             }
         };
     }
+
+    // Генерация дефолтных заданий для глаголов
+    private static List<ListeningTask> GetDefaultListeningTasksForVerbs()
+    {
+        return new List<ListeningTask>
+        {
+            new ListeningTask
+            {
+                Id = 500,
+                AudioUrl = "audio/axwaryn.mp3",
+                AudioDecoding = "Æз бахордтон",
+                RussianTranslation = "Я поел"
+            },
+            new ListeningTask
+            {
+                Id = 501,
+                AudioUrl = "audio/dzuuryn.mp3",
+                AudioDecoding = "Уыдон дзырдтой",
+                RussianTranslation = "Они говорили"
+            }
+        };
+    }
+
+
+
 
     private static string GetTheoryHtml()
     {
