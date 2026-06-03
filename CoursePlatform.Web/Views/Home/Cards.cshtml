@@ -24,7 +24,10 @@
                 <div class="flashcard-inner" onclick="this.classList.toggle('flipped')">
                     <div class="flashcard-front">
                         <div class="card-image">
-                            <img src="@card.ImageUrl" alt="@card.RussianWord" onerror="this.style.display='none'" />
+                            @if (card.ImageUrl != null)
+                            {
+                                <img src="@card.ImageUrl" alt="@card.RussianWord" onerror="this.style.display='none'" />
+                            }
                         </div>
                         <div class="card-word">@card.OssetianWord</div>
                         @if (!string.IsNullOrEmpty(card.VerbType))

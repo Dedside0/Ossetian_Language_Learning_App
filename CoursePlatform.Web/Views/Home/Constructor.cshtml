@@ -55,7 +55,9 @@
                 {
                     <div class="mini-card">
                         <div class="mini-card-img">
-                            <img src="@card.ImageUrl" alt="@card.RussianWord" onerror="this.parentElement.innerHTML='<i class=\'fas fa-image\'></i>'" />
+                            @if (card.ImageUrl != null){
+                                <img src="@card.ImageUrl" alt="@card.RussianWord" onerror="this.parentElement.innerHTML='<i class=\'fas fa-image\'></i>'" />
+                            }
                         </div>
                         <div class="mini-card-text">
                             <strong>@card.OssetianWord</strong>
@@ -73,10 +75,11 @@
         </button>
 
         <div id="cardForm" class="card-form" style="display:none;">
-            <form asp-action="AddCard" method="post">
+            <form asp-action="AddCard" method="post" enctype="multipart/form-data">
                 <input type="hidden" name="courseId" value="@courseId" />
                 <input type="hidden" name="lessonId" value="@lessonId" />
                 <input type="hidden" name="audioUrl" id="audioUrl" value="" />
+                <input type="hidden" name="imageUrl" id="imageUrl" value="" />
 
                 <div class="form-group-custom">
                     <label><i class="fas fa-language"></i> Слово на осетинском</label>
@@ -86,6 +89,43 @@
                 <div class="form-group-custom">
                     <label><i class="fas fa-globe"></i> Слово на русском</label>
                     <input type="text" name="russianWord" class="input-custom" placeholder="Например: Есть" required id="russianInput" />
+                </div>
+                <div class="form-group-custom">
+                    <label><i class="fas fa-image"></i> Изображение</label>
+                    <div class="image-tabs">
+                        <button type="button" class="tab-btn active" onclick="switchImageTab('upload')">
+                            <i class="fas fa-upload"></i> Загрузить
+                        </button>
+                        <button type="button" class="tab-btn" onclick="switchImageTab('generate')">
+                            <i class="fas fa-magic"></i> Сгенерировать
+                        </button>
+                    </div>
+                </div>
+
+                <div id="uploadTab" class="image-tab-content active">
+                    <div class="form-group-custom">
+                        <div class="file-input">
+                            <input type="file" id="imageFile" accept="image/*" onchange="uploadImage()" style="width:100%">
+                            <label for="imageFile">📁 Выберите файл</label>
+                        </div>
+                        <div class="file-hint">Поддерживаются форматы: JPG, PNG, GIF</div>
+                    </div>
+                </div>
+
+                <div id="generateTab" class="image-tab-content" style="display:none;">
+                    <div class="form-group-custom">
+                        <textarea id="imagePrompt" class="input-custom" rows="2" placeholder="Опишите, какое изображение нужно сгенерировать... Например: 'Осетинский чайный стол с пирогами'"></textarea>
+                        <button type="button" class="btn-generate-image" onclick="generateImage()">
+                            <i class="fas fa-wand-magic"></i> Сгенерировать
+                        </button>
+                    </div>
+                </div>
+                <div class="form-group-custom" id="imagePreviewSection" style="display:none;">
+                    <label>Превью изображения</label>
+                    <div class="image-preview" id="imagePreview"></div>
+                    <button type="button" class="btn-remove-image" onclick="removeImage()">
+                        <i class="fas fa-trash"></i> Удалить
+                    </button>
                 </div>
 
                 <div class="form-group-custom">
@@ -99,11 +139,6 @@
                         </div>
                         <audio id="audioPlayback" controls style="display:none; width:100%; margin-top:8px;"></audio>
                     </div>
-                </div>
-
-                <div class="form-group-custom" id="imagePreviewSection" style="display:none;">
-                    <label>Превью изображения</label>
-                    <div class="image-preview" id="imagePreview"></div>
                 </div>
 
                 <button type="submit" class="btn-primary-custom" id="btnSave">
@@ -222,12 +257,13 @@
         let audioChunks = [];
         let isRecording = false;
 
-        function toggleForm() {
+               function toggleForm() {
             const form = document.getElementById('cardForm');
             const btn = document.getElementById('btnShowForm');
             if (form.style.display === 'none') {
                 form.style.display = 'block';
                 btn.style.display = 'none';
+                resetImageForm();
             } else {
                 form.style.display = 'none';
                 btn.style.display = 'flex';
@@ -250,17 +286,7 @@
             form.querySelector('form').reset(); 
         }
     }
-    document.getElementById('russianInput').addEventListener('input', function() {
-        const val = this.value.trim();
-        const section = document.getElementById('imagePreviewSection');
-        const preview = document.getElementById('imagePreview');
-        if (val.length > 0) {
-            section.style.display = 'block';
-            preview.innerHTML = '<img src="https://via.placeholder.com/300x200?text=' + encodeURIComponent(val) + '" alt="' + val + '" />';
-        } else {
-            section.style.display = 'none';
-        }
-    });
+    
 
         async function toggleRecording() {
             const btn = document.getElementById('btnRecord');
@@ -333,6 +359,143 @@
                 btn.classList.remove('recording');
                 if (status) status.style.display = 'none';
             }
+        }
+        let currentImageTab = 'upload';
+        function switchImageTab(tab) {
+            currentImageTab = tab;
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            const uploadTab = document.getElementById('uploadTab');
+            const generateTab = document.getElementById('generateTab');
+
+            if (tab === 'upload') {
+                uploadTab.style.display = 'block';
+                generateTab.style.display = 'none';
+            } else {
+                uploadTab.style.display = 'none';
+                generateTab.style.display = 'block';
+            }
+        }
+
+        // Загрузка изображения через файл
+        async function uploadImage() {
+            const fileInput = document.getElementById('imageFile');
+            const file = fileInput.files[0];
+            if (!file) return;
+            if (file.size > 5 * 1024 * 1024) {
+                alert('Файл слишком большой. Максимальный размер 5MB.');
+                return;
+            }
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+            if (!allowedTypes.includes(file.type)) {
+                alert('Поддерживаются только форматы: JPG, PNG, GIF, WEBP');
+                return;
+            }
+            const formData = new FormData();
+            formData.append('imageFile', file);
+            showImageLoader();
+            try {
+                const response = await fetch('/api/Image/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    document.getElementById('imageUrl').value = result.fileUrl;
+                    showImagePreview(result.fileUrl);
+                } else {
+                    alert('Ошибка загрузки изображения: ' + (result.error || 'Неизвестная ошибка'));
+                }
+            } catch (error) {
+                console.error('Ошибка:', error);
+                alert('Не удалось загрузить изображение. Проверьте соединение.');
+            }
+        }
+
+        // Генерация изображения через API
+        async function generateImage() {
+            const prompt = document.getElementById('imagePrompt').value.trim();
+
+            if (!prompt) {
+                alert('Пожалуйста, опишите, какое изображение нужно сгенерировать');
+                return;
+            }
+            showImageLoader();
+            try {
+                const response = await fetch('/api/Image/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        prompt: prompt,
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    document.getElementById('imageUrl').value = result.imageUrl;
+                    showImagePreview(result.imageUrl);
+                } else {
+                    alert('Ошибка генерации изображения: ' + (result.error || 'Попробуйте другой запрос'));
+                }
+            } catch (error) {
+                console.error('Ошибка:', error);
+                alert('Не удалось сгенерировать изображение. Проверьте соединение.');
+            }
+        }
+
+        // Показать превью изображения
+        function showImagePreview(imageUrl) {
+            const previewSection = document.getElementById('imagePreviewSection');
+            const preview = document.getElementById('imagePreview');
+
+            previewSection.style.display = 'block';
+            preview.innerHTML = `<img src="${imageUrl}" alt="Preview" onerror="this.onerror=null; this.parentElement.innerHTML='<div style=\'padding:20px; color:#999;\'><i class=\'fas fa-image\'></i> Ошибка загрузки изображения</div>'" />`;
+        }
+
+        // Показать индикатор загрузки
+        function showImageLoader() {
+            const preview = document.getElementById('imagePreview');
+            const previewSection = document.getElementById('imagePreviewSection');
+
+            previewSection.style.display = 'block';
+            preview.innerHTML = '<div style="padding:20px; text-align:center;"><div class="loading-spinner"></div><p>Загрузка...</p></div>';
+        }
+
+        // Удалить изображение
+        function removeImage() {
+            document.getElementById('imageUrl').value = '';
+            document.getElementById('imagePreviewSection').style.display = 'none';
+            document.getElementById('imagePreview').innerHTML = '';
+
+            // Очищаем поля загрузки/генерации
+            document.getElementById('imageFile').value = '';
+            document.getElementById('imagePrompt').value = '';
+        }
+                function resetImageForm() {
+            document.getElementById('imageUrl').value = '';
+            document.getElementById('imagePreviewSection').style.display = 'none';
+            document.getElementById('imagePreview').innerHTML = '';
+            document.getElementById('imageFile').value = '';
+            document.getElementById('imagePrompt').value = '';
+
+            // Сбрасываем на вкладку загрузки
+            currentImageTab = 'upload';
+            const uploadTab = document.getElementById('uploadTab');
+            const generateTab = document.getElementById('generateTab');
+            uploadTab.style.display = 'block';
+            generateTab.style.display = 'none';
+
+            // Обновляем активную кнопку
+            const btns = document.querySelectorAll('.tab-btn');
+            btns.forEach(btn => btn.classList.remove('active'));
+            btns[0].classList.add('active');
         }
     </script>
 }
