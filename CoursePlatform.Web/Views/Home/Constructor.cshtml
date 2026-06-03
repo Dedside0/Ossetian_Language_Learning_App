@@ -12,6 +12,38 @@
 </div>
 
 <div class="constructor-page">
+    <div class="add-card-section" style="margin-bottom: 30px;">
+        <h3>Редактировать текст Теории</h3>
+
+        <form asp-action="UpdateTheory" method="post" id="theoryForm">
+            <input type="hidden" name="courseId" value="@courseId" />
+            <input type="hidden" name="lessonId" value="@lessonId" />
+
+            <input type="hidden" name="theoryHtml" id="theoryHtmlInput" />
+
+            <div class="quill-wrapper" style="border: 2px solid #ccc; border-radius: 10px; overflow: hidden;">
+
+                <div id="my-custom-toolbar" class="my-cool-action-bar" style="background: #f3f3f3; padding: 8px; border-bottom: 1px solid #ccc;">
+                    <button type="button" class="ql-bold"><b>Ж</b></button>
+                    <button type="button" class="ql-italic"><i>К</i></button>
+                    <button type="button" class="ql-underline"><u>Ч</u></button>
+                    <select type="button" class="ql-header">
+                        <option selected>Обычный</option>
+                        <option value="1">Заголовок 1</option>
+                        <option value="2">Заголовок 2</option>
+                    </select>
+                </div>
+
+                <div id="editor-container" style="min-height: 200px; font-size: 16px; background: #fff; color: #000;">
+                    @Html.Raw(Model.TheoryHtml)
+                </div>
+            </div>
+
+            <button type="submit" class="btn-primary-custom" style="margin-top: 10px;">
+                <i class="fas fa-save"></i> Сохранить теорию
+            </button>
+        </form>
+    </div>
     @if (Model.Cards.Any())
     {
         <div class="constructor-cards">

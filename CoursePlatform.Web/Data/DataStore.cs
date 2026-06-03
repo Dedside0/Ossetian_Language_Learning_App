@@ -61,11 +61,6 @@ public static class DataStore
             lesson.TheoryHtml = theoryHtml ?? string.Empty;
         }
     }
-    public static Lesson? GetLesson(int courseId, int lessonId)
-    {
-        var course = GetCourse(courseId);
-        return course?.Lessons.FirstOrDefault(l => l.Id == lessonId);
-    }
 
     public static Card AddCard(int courseId, int lessonId, string ossetianWord, string russianWord, string audioUrl, string imageUrl)
     {
@@ -148,7 +143,7 @@ public static class DataStore
                             "<p>Осетинский язык имеет богатую систему приветствий, которые меняются в зависимости от времени суток и ситуации.</p>" +
                             "<ul><li><strong>Салам!</strong> — Привет! (неформальное)</li>" +
                             "<li><strong>Де бон хорз!</strong> — Добрый день!</li>" +
-                            "<li><strong>Дæ изæр хорз!</strong> — Добрый вечер!</li></ul>",
+                            "<li><strong>Дæ изæр хорз!</strong> — Добрый evening!</li></ul>",
                         Cards = new List<Card>
                         {
                             new Card { Id = 100, OssetianWord = "Салам", RussianWord = "Привет", ImageUrl = "\\CardImages\\hi.avif" },
