@@ -115,14 +115,14 @@ public class HomeController : Controller
         return RedirectToAction("Constructor", new { courseId, lessonId });
     }
     [HttpPost]
-    public IActionResult AddCard(int courseId, int lessonId, string ossetianWord, string russianWord, string audioUrl)
+    public IActionResult AddCard(int courseId, int lessonId, string ossetianWord, string russianWord, string audioUrl, string imageUrl)
     {
         if (string.IsNullOrWhiteSpace(ossetianWord) || string.IsNullOrWhiteSpace(russianWord))
         {
             return RedirectToAction("Constructor", new { courseId, lessonId });
         }
 
-        DataStore.AddCard(courseId, lessonId, ossetianWord, russianWord, audioUrl);
+        DataStore.AddCard(courseId, lessonId, ossetianWord, russianWord, audioUrl, imageUrl);
         return RedirectToAction("Constructor", new { courseId, lessonId });
     }
     [HttpPost]

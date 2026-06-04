@@ -428,3 +428,4 @@ FodyWeavers.xsd
 *.msm
 *.msp
 /CoursePlatform.Web/wwwroot/uploads/audio
+/CoursePlatform.Web/wwwroot/uploads/Images
