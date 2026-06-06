@@ -938,7 +938,262 @@ body {
     font-size: 15px;
     margin-bottom: 24px;
 }
+/* ============================================
+   LISTENING (Аудирование) - исправленное расположение
+   ============================================ */
+.listening-page {
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - 140px);
+}
 
+/* Ключевое изменение - форма занимает всё доступное пространство */
+#listeningForm {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+
+
+.question-card {
+    display: none;
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    padding: 24px 20px;
+    box-shadow: var(--shadow-lg);
+    width: 100%;
+    max-width: 480px;
+    margin: 0 auto;
+}
+
+    .question-card.active {
+        display: block;
+        animation: fadeIn 0.4s ease;
+    }
+
+/* Кнопки теперь будут внизу */
+.cards-actions {
+    display: flex;
+    gap: 12px;
+    padding: 16px 0;
+    margin-top: 20px;
+    background: var(--bg); /* Чтобы кнопки не сливались с фоном */
+    flex-shrink: 0; /* Запрещаем сжатие */
+}
+
+/* Остальные стили остаются без изменений */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.question-label {
+    font-size: 13px;
+    color: var(--primary);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.audio-section {
+    margin-bottom: 24px;
+}
+
+.btn-play-audio {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 14px 20px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+}
+
+    .btn-play-audio:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+    }
+
+.question-sentence {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 20px;
+    line-height: 1.4;
+}
+
+.answer-section {
+    margin-bottom: 16px;
+}
+
+.answer-input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 2px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 16px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+    .answer-input:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px var(--primary-light);
+    }
+
+.answer-feedback {
+    display: none;
+    padding: 12px 16px;
+    border-radius: var(--radius-sm);
+    margin-top: 12px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+    .answer-feedback.correct {
+        background: #E8F5E9;
+        color: #2E7D32;
+        border-left: 4px solid var(--success);
+    }
+
+    .answer-feedback.incorrect {
+        background: #FFEBEE;
+        color: #C62828;
+        border-left: 4px solid var(--danger);
+    }
+
+.btn-hint {
+    background: none;
+    border: none;
+    color: var(--warning);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 8px 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.hint-text {
+    background: #FFF3E0;
+    color: #E65100;
+    padding: 10px 14px;
+    border-radius: var(--radius-xs);
+    font-size: 13px;
+    margin-top: 8px;
+}
+
+.score-bar {
+    background: var(--primary-light);
+    color: var(--primary);
+    text-align: center;
+    padding: 10px;
+    border-radius: var(--radius-xs);
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+/* Стили для результата */
+.listening-result {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px 20px;
+    flex: 1;
+}
+
+.result-icon {
+    font-size: 56px;
+    color: var(--warning);
+    margin-bottom: 16px;
+}
+
+.listening-result h2 {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+.result-score {
+    font-size: 48px;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 12px;
+}
+
+/* Кнопка проверки как в спряжении */
+.btn-check {
+    flex: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 14px;
+    background: var(--success);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+    .btn-check:hover {
+        background: #43A047;
+    }
+
+.btn-next {
+    flex: 2;
+    background: var(--primary);
+}
+
+    .btn-next:hover {
+        background: var(--primary-dark);
+    }
+
+.btn-exit {
+    flex: 1;
+}
+
+@media (max-width: 480px) {
+    .question-card {
+        padding: 20px 16px;
+    }
+
+    .question-sentence {
+        font-size: 16px;
+    }
+
+    .answer-input {
+        font-size: 14px;
+        padding: 12px 14px;
+    }
+}
 /* ============================================
    CONSTRUCTOR
    ============================================ */
