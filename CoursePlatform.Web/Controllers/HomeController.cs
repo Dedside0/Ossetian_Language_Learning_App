@@ -145,6 +145,19 @@ public class HomeController : Controller
 
         return RedirectToAction("Constructor", new { courseId, lessonId });
     }
+    [HttpPost]
+    public IActionResult AddListeningTask(int courseId, int lessonId, string audioUrl, string audioDecoding, string? russianTranslation)
+    {
+        if (string.IsNullOrWhiteSpace(audioUrl) || string.IsNullOrWhiteSpace(audioDecoding))
+        {
+            TempData["Error"] = "Пожалуйста, заполните аудиофайл и расшифровку";
+            return RedirectToAction("Constructor", new { courseId, lessonId });
+        }
+
+        DataStore.AddListeningTask(courseId, lessonId, audioUrl, audioDecoding, russianTranslation);
+        TempData["Success"] = "Задание на аудирование успешно добавлено";
+        return RedirectToAction("Constructor", new { courseId, lessonId });
+    }
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {

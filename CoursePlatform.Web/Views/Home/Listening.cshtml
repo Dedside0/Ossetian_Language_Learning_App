@@ -4,107 +4,317 @@
     ViewData["Title"] = "Аудирование";
     var results = ViewBag.ValidationResults as Dictionary<int, (bool IsCorrect, string CorrectText)>;
     bool isEvaluated = results != null;
+    var courseId = ViewBag.CourseId;
+    var lessonId = ViewBag.LessonId;
 }
 
-<div class="container mt-4" style="max-width: 800px;">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>Задание на аудирование (Хъусæн куыст)</h2>
-        <a asp-action="Lessons" asp-route-courseId="@ViewBag.CourseId" class="btn btn-outline-secondary">Назад к урокам</a>
+<div class="conjugation-page">
+    <div class="cards-header">
+        <a asp-action="Lessons" asp-route-courseId="@courseId" class="back-btn">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+        <div class="cards-progress">
+            <span id="currentTask">1</span> / <span>@Model.Count</span>
+        </div>
+        <div class="progress-bar-custom">
+            <div id="progressFill" class="progress-fill" style="width: @(Model.Count > 0 ? (1.0 / Model.Count * 100) : 0)%"></div>
+        </div>
     </div>
 
     @if (Model == null || !Model.Any())
     {
-        <div class="alert alert-warning">
-            В этом уроке еще не созданы задания на прослушивание.
+        <div class="empty-state">
+            <i class="fas fa-headphones"></i>
+            <p>В этом уроке еще не созданы задания на прослушивание.</p>
         </div>
     }
     else
     {
-        <form asp-action="VerifyListeningAnswers" method="post">
-            <input type="hidden" name="courseId" value="@ViewBag.CourseId" />
-            <input type="hidden" name="lessonId" value="@ViewBag.LessonId" />
+        <form id="listeningForm" asp-action="VerifyListeningAnswers" method="post">
+            <input type="hidden" name="courseId" value="@courseId" />
+            <input type="hidden" name="lessonId" value="@lessonId" />
 
-            @for (int i = 0; i < Model.Count; i++)
-            {
-                var task = Model[i];
-                string inputClass = "";
-                bool? isCurrentCorrect = null;
-
-                // Настройка стилей валидации при наличии результатов проверки
-                if (isEvaluated && results.ContainsKey(task.Id))
+            <div class="questions-container" id="questionsContainer">
+                @for (int i = 0; i < Model.Count; i++)
                 {
-                    isCurrentCorrect = results[task.Id].IsCorrect;
-                    inputClass = isCurrentCorrect.Value ? "is-valid" : "is-invalid";
-                }
+                    var task = Model[i];
+                    string inputClass = "";
+                    bool? isCurrentCorrect = null;
+                    string userAnswer = "";
 
-                // Гарантируем, что путь к аудиофайлу всегда начинается с косой черты от корня сайта
-                var cleanAudioUrl = task.AudioUrl.StartsWith("/") ? task.AudioUrl : "/" + task.AudioUrl;
+                    if (isEvaluated && results.ContainsKey(task.Id))
+                    {
+                        isCurrentCorrect = results[task.Id].IsCorrect;
+                        inputClass = isCurrentCorrect.Value ? "is-valid" : "is-invalid";
+                    }
 
-                // Безопасное извлечение ответа пользователя без вызова исключения на GET-запросах
-                string userAnswer = "";
-                if (Context.Request.HasFormContentType && Context.Request.Form.ContainsKey($"userAnswers[{task.Id}]"))
-                {
-                    userAnswer = Context.Request.Form[$"userAnswers[{task.Id}]"];
-                }
+                    var cleanAudioUrl = task.AudioUrl.StartsWith("/") ? task.AudioUrl : "/" + task.AudioUrl;
 
-                <div class="card mb-4 shadow-sm">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center mb-3">
-                            <span class="badge bg-secondary me-3" style="font-size: 1.1rem;">Задание @(i + 1)</span>
-                            
+                    if (Context.Request.HasFormContentType && Context.Request.Form.ContainsKey($"userAnswers[{task.Id}]"))
+                    {
+                        userAnswer = Context.Request.Form[$"userAnswers[{task.Id}]"];
+                    }
+
+                    <div class="question-card @(i == 0 ? "active" : "")" data-index="@i" data-task-id="@task.Id" data-correct-answer="@task.AudioDecoding">
+                        <div class="question-label">
+                            <i class="fas fa-headphones"></i> Задание на аудирование
+                        </div>
+
+                        <div class="audio-section">
                             <audio id="audio-@task.Id" src="@cleanAudioUrl" preload="none"></audio>
-                            <button type="button" class="btn btn-primary d-flex align-items-center" onclick="document.getElementById('audio-@task.Id').play()">
-                                🔊 Включить запись
+                            <button type="button" class="btn-play-audio" onclick="playAudio(@task.Id)">
+                                <i class="fas fa-play"></i>
+                                <span>Прослушать запись</span>
                             </button>
                         </div>
 
-                        <div class="mb-2">
-                            <label class="form-label font-weight-bold">Послушайте запись и напишите услышанное на осетинском:</label>
-                            
-                            <input type="text" 
-                                   name="userAnswers[@task.Id]" 
-                                   class="form-control form-control-lg @inputClass" 
-                                   placeholder="Введите текст..." 
+                        <div class="question-sentence">
+                            Напишите услышанное на осетинском:
+                        </div>
+
+                        <div class="answer-section">
+                            <input type="text"
+                                   name="userAnswers[@task.Id]"
+                                   class="answer-input @inputClass"
+                                   id="answer_@i"
+                                   placeholder="Введите перевод..."
                                    autocomplete="off"
                                    value="@userAnswer"
                                    @(isEvaluated ? "readonly" : "") />
-                        </div>
-
-                        @if (isEvaluated && isCurrentCorrect.HasValue)
-                        {
-                            if (isCurrentCorrect.Value)
-                            {
-                                <div class="text-success mt-1">
-                                    ✓ Раст у! (Правильно!) — <em>@task.RussianTranslation</em>
-                                </div>
-                            }
-                            else
-                            {
-                                <div class="text-danger mt-1">
-                                    ✗ Æнæраст (Ошибка). Правильный ответ: <strong>@task.AudioDecoding</strong>
-                                    @if (!string.IsNullOrEmpty(task.RussianTranslation))
+                            <div class="answer-feedback" id="feedback_@i" style="@(isEvaluated && isCurrentCorrect.HasValue ? "display:block;" : "")">
+                                @if (isEvaluated && isCurrentCorrect.HasValue)
+                                {
+                                    if (isCurrentCorrect.Value)
                                     {
-                                        <span>— (@task.RussianTranslation)</span>
+                                        <i class="fas fa-check-circle"></i>
+                                        <span>Раст у! Правильно! — @task.RussianTranslation</span>
                                     }
-                                </div>
-                            }
-                        }
+                                    else
+                                    {
+                                        <i class="fas fa-times-circle"></i>
+                                        <span>
+                                            Æнæраст (Ошибка). Правильный ответ:
+                                            <strong>@task.AudioDecoding</strong>
+                                            @if (!string.IsNullOrEmpty(task.RussianTranslation))
+                                            {
+                                                <span>— (@task.RussianTranslation)</span>
+                                            }
+                                        </span>
+                                    }
+                                }
+                            </div>
+                        </div>
                     </div>
-                </div>
-            }
-
-            <div class="mt-4 mb-5">
-                @if (!isEvaluated)
-                {
-                    <button type="submit" class="btn btn-success btn-lg w-100">Бæрæг кæнын (Проверить ответы)</button>
-                }
-                else
-                {
-                    <a asp-action="Listening" asp-route-courseId="@ViewBag.CourseId" asp-route-lessonId="@ViewBag.LessonId" class="btn btn-primary btn-lg w-100">
-                        Повторить тест
-                    </a>
                 }
             </div>
+
+            <div class="listening-result" id="resultSection" style="display:none;">
+                <div class="result-icon"><i class="fas fa-trophy"></i></div>
+                <h2>Аудирование завершено!</h2>
+                <div class="result-score">
+                    <span id="finalScore">0</span> / @Model.Count
+                </div>
+                <p id="resultMessage"></p>
+                <a asp-action="Lessons" asp-route-courseId="@courseId" class="btn-primary-custom">
+                    <i class="fas fa-arrow-left"></i> К уроку
+                </a>
+            </div>
+
+            
+
+            @if (!isEvaluated)
+            {
+                <input type="submit" id="submitForm" style="display: none;" />
+            }
         </form>
+        <div class="cards-actions" id="actionsBar">
+            <a asp-action="Lessons" asp-route-courseId="@courseId" class="btn-exit">
+                <i class="fas fa-sign-out-alt"></i> Выйти
+            </a>
+            @if (!isEvaluated)
+            {
+                <button type="button" id="btnCheck" class="btn-check" onclick="checkAnswer()">
+                    Проверить <i class="fas fa-check"></i>
+                </button>
+                <button type="button" id="btnNext" class="btn-next" style="display:none;" onclick="nextTask()">
+                    Продолжить <i class="fas fa-arrow-right"></i>
+                </button>
+            }
+            else
+            {
+                <button type="button" id="btnNext" class="btn-next" onclick="finishListening()">
+                    Завершить <i class="fas fa-check"></i>
+                </button>
+            }
+        </div>
     }
 </div>
+
+@section Scripts {
+    <script>
+        let currentTask = 0;
+        const totalTasks = @Model.Count;
+        let correctCount = 0;
+        let userAnswers = {};
+        let checkedQuestions = {};
+
+        @if (!isEvaluated)
+        {
+                <text>
+                // Сохраняем ответы при вводе
+                function saveAnswer(taskId, value, index) {
+                    userAnswers[taskId] = value;
+                    // Если этот вопрос уже был проверен, сбрасываем проверку
+                    if (checkedQuestions[index]) {
+                        delete checkedQuestions[index];
+                        // Обновляем UI кнопки
+                        const checkBtn = document.getElementById('btnCheck');
+                        if (checkBtn) {
+                            checkBtn.style.display = 'flex';
+                            document.getElementById('btnNext').style.display = 'none';
+                        }
+                        // Очищаем фидбек
+                        const feedback = document.getElementById('feedback_' + index);
+                        if (feedback) {
+                            feedback.style.display = 'none';
+                            feedback.innerHTML = '';
+                        }
+                    }
+                }
+
+                function normalize(str) {
+                    return str.trim().toLowerCase().replace(/ё/g, 'е').replace(/\s+/g, ' ');
+                }
+
+                function checkAnswer() {
+                    const card = document.querySelectorAll('.question-card')[currentTask];
+                    const input = document.getElementById('answer_' + currentTask);
+                    const feedback = document.getElementById('feedback_' + currentTask);
+                    const correctAnswer = card.dataset.correctAnswer;
+                    const userAnswer = input.value;
+                    const taskId = card.dataset.taskId;
+
+                    if (!userAnswer.trim()) {
+                        feedback.innerHTML = '<i class="fas fa-exclamation-circle"></i> Пожалуйста, введите ответ';
+                        feedback.className = 'answer-feedback incorrect';
+                        feedback.style.display = 'block';
+                        return;
+                    }
+
+                    input.disabled = true;
+
+                    if (normalize(userAnswer) === normalize(correctAnswer)) {
+                        feedback.innerHTML = '<i class="fas fa-check-circle"></i> Раст у! Правильно!';
+                        feedback.className = 'answer-feedback correct';
+                        if (!checkedQuestions[currentTask]) {
+                            correctCount++;
+                            checkedQuestions[currentTask] = true;
+                        }
+                    } else {
+                        feedback.innerHTML = '<i class="fas fa-times-circle"></i> Æнæраст (Ошибка). Правильный ответ: <strong>' + correctAnswer + '</strong>';
+                        feedback.className = 'answer-feedback incorrect';
+                        if (checkedQuestions[currentTask]) {
+                            correctCount--;
+                            checkedQuestions[currentTask] = false;
+                        } else {
+                            checkedQuestions[currentTask] = false;
+                        }
+                    }
+                    feedback.style.display = 'block';
+
+                    document.getElementById('btnCheck').style.display = 'none';
+                    document.getElementById('btnNext').style.display = 'flex';
+
+                    if (currentTask === totalTasks - 1) {
+                        document.getElementById('btnNext').innerHTML = 'Завершить <i class="fas fa-flag-checkered"></i>';
+                    }
+
+                    // Обновляем счётчик в реальном времени
+                    document.getElementById('scoreCorrect').textContent = correctCount;
+                    document.getElementById('scoreTotal').textContent = totalTasks;
+                    document.getElementById('scoreBar').style.display = 'block';
+                }
+
+                function nextTask() {
+                    if (currentTask >= totalTasks - 1) {
+                        showResult();
+                        return;
+                    }
+
+                    const cards = document.querySelectorAll('.question-card');
+                    cards[currentTask].classList.remove('active');
+                    currentTask++;
+                    cards[currentTask].classList.add('active');
+
+                    document.getElementById('currentTask').textContent = currentTask + 1;
+                    document.getElementById('progressFill').style.width = ((currentTask + 1) / totalTasks * 100) + '%';
+
+                    document.getElementById('btnCheck').style.display = 'flex';
+                    document.getElementById('btnNext').style.display = 'none';
+
+                    const nextInput = document.getElementById('answer_' + currentTask);
+                    if (nextInput && !nextInput.disabled) {
+                        nextInput.focus();
+                    }
+                }
+
+                function showHint(index) {
+                    const hint = document.getElementById('hint_' + index);
+                    hint.style.display = hint.style.display === 'none' ? 'block' : 'none';
+                }
+
+                function showResult() {
+                    document.getElementById('questionsContainer').style.display = 'none';
+                    document.getElementById('actionsBar').style.display = 'none';
+                    document.getElementById('resultSection').style.display = 'flex';
+                    document.getElementById('finalScore').textContent = correctCount;
+
+                    const pct = correctCount / totalTasks * 100;
+                    const msg = document.getElementById('resultMessage');
+                    if (pct >= 80) msg.textContent = 'Отличный результат! Вы отлично понимаете осетинскую речь на слух!';
+                    else if (pct >= 50) msg.textContent = 'Хороший результат. Попробуйте ещё раз для закрепления.';
+                    else msg.textContent = 'Не сдавайтесь! Прослушайте записи ещё раз и попробуйте снова.';
+                }
+
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') {
+                        if (document.getElementById('btnCheck').style.display !== 'none') {
+                            checkAnswer();
+                        } else if (document.getElementById('btnNext').style.display !== 'none') {
+                            nextTask();
+                        }
+                    }
+                });
+
+                // Сохранение ответов при вводе
+                document.querySelectorAll('.answer-input').forEach((input, idx) => {
+                    const card = document.querySelectorAll('.question-card')[idx];
+                    const taskId = card.dataset.taskId;
+                    input.addEventListener('input', function() {
+                        saveAnswer(taskId, this.value, idx);
+                    });
+                });
+                </text>
+        }
+        else
+        {
+                <text>
+                function finishListening() {
+                    window.location.href = '@Url.Action("Lessons", new { courseId = courseId })';
+                }
+                </text>
+        }
+
+        function playAudio(taskId) {
+            const audio = document.getElementById(`audio-${taskId}`);
+            const btn = audio.parentElement.querySelector('.btn-play-audio i');
+            const btnText = audio.parentElement.querySelector('.btn-play-audio span');
+
+            if (audio.paused) {
+                audio.play();
+            } else {
+                audio.pause();
+            }
+        }
+    </script>
+}

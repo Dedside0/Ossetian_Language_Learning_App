@@ -188,7 +188,7 @@
             </div>
         }
     </div>
-    <div class="add-card-section" style="margin-bottom: 30px;">
+    <div class="add-card-section">
         <button type="button" class="btn-add-card" id="btnShowQuestionForm" onclick="toggleQuestionForm()">
             <i class="fas fa-plus"></i> Добавить вопрос в тест
         </button>
@@ -222,7 +222,100 @@
             </form>
         </div>
     </div>
+    <div class="constructor-cards">
+        
 
+        @if (Model.ListeningTasks != null && Model.ListeningTasks.Count > 0)
+        {
+            <div class="table-header-flex">
+                <h3>Задания на аудирование (@(Model.ListeningTasks?.Count ?? 0))</h3>
+            </div>
+            <div class="table-responsive-custom">
+                <table class="app-custom-table">
+                    <thead>
+                        <tr>
+                            <th><i class="fas fa-microphone"></i> Аудиофайл</th>
+                            <th><i class="fas fa-language"></i> Расшифровка (Осетинский)</th>
+                            <th><i class="fas fa-globe"></i> Перевод на русский</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var task in Model.ListeningTasks)
+                        {
+                            <tr>
+                                <td class="table-cell-audio">
+                                    <audio controls style="height: 32px; width: 150px;">
+                                        <source src="@task.AudioUrl" type="audio/webm">
+                                        Ваш браузер не поддерживает аудио.
+                                    </audio>
+                                </td>
+                                <td class="table-cell-answer"><strong>@task.AudioDecoding</strong></td>
+                                <td class="table-cell-hint">
+                                    @if (!string.IsNullOrEmpty(task.RussianTranslation))
+                                    {
+                                        <span class="hint-badge">@task.RussianTranslation</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="hint-none">—</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        
+    </div>
+
+    <div class="add-card-section">
+        <button type="button" class="btn-add-card" id="btnShowListeningForm" onclick="toggleListeningForm()">
+            <i class="fas fa-plus"></i> Добавить задание на аудирование
+        </button>
+
+        <div id="listeningForm" class="card-form" style="display:none;">
+            <form asp-action="AddListeningTask" method="post">
+                <input type="hidden" name="courseId" value="@courseId" />
+                <input type="hidden" name="lessonId" value="@lessonId" />
+                <input type="hidden" name="audioUrl" id="audioUrlListening" value="" />
+
+                <div class="form-group-custom">
+                    <label><i class="fas fa-microphone"></i> Аудиозапись</label>
+                    <div class="audio-recorder">
+                        <button type="button" class="btn-record" id="btnRecordListening" onclick="toggleListeningRecording()">
+                            <i class="fas fa-microphone"></i> Записать аудио
+                        </button>
+                        <div id="listeningRecordingStatus" class="recording-status" style="display:none;">
+                            <i class="fas fa-circle recording-dot"></i> Запись...
+                        </div>
+                        <audio id="listeningAudioPlayback" controls style="display:none; width:100%; margin-top:8px;"></audio>
+                    </div>
+                </div>
+
+                <div class="form-group-custom">
+                    <label><i class="fas fa-language"></i> Расшифровка (на осетинском)</label>
+                    <input type="text" name="audioDecoding" class="input-custom"
+                           placeholder="Например: Дæ бон хорз, æз Мырытон" required />
+                    <small class="form-text text-muted">Текст, который должны услышать ученики</small>
+                </div>
+
+                <div class="form-group-custom">
+                    <label><i class="fas fa-globe"></i> Перевод на русский (необязательно)</label>
+                    <input type="text" name="russianTranslation" class="input-custom"
+                           placeholder="Например: Здравствуйте, я Муратон" />
+                    <small class="form-text text-muted">Поможет ученикам проверить понимание</small>
+                </div>
+
+                <button type="submit" class="btn-primary-custom" id="btnSaveListening">
+                    <i class="fas fa-save"></i> Сохранить задание
+                </button>
+                <button type="button" class="btn-cancel" onclick="toggleListeningForm()">
+                    Отмена
+                </button>
+            </form>
+        </div>
+    </div>
 
     <div class="constructor-footer">
         <div class="footer-buttons">
@@ -253,7 +346,7 @@
                 <div class="chat-messages" id="chatMessages">
                     <div class="chat-message assistant">
                         <div class="message-bubble">
-                            👋 Здравствуйте! Я ваш виртуальный ассистент по платформе CoursePlatform.<br /><br />
+                            👋 Здравствуйте! Я ваш виртуальный ассистент по платформе Адæм.<br /><br />
                             <strong>Я могу помочь вам:</strong><br />
                             • Ответить на вопросы по работе с платформой<br />
                             • Дать советы по созданию уроков и карточек<br />
@@ -310,6 +403,9 @@
         let mediaRecorder;
         let audioChunks = [];
         let isRecording = false;
+        let listeningMediaRecorder;
+        let listeningAudioChunks = [];
+        let isListeningRecording = false;
 
                function toggleForm() {
             const form = document.getElementById('cardForm');
@@ -664,5 +760,114 @@
 
         // Привязываем обработчик к кнопке
         document.getElementById('openChatBtn').addEventListener('click', openChatModal);
+
+
+        // Функции для управления формой аудирования
+        function toggleListeningForm() {
+            const form = document.getElementById('listeningForm');
+            const btn = document.getElementById('btnShowListeningForm');
+
+            if (form.style.display === 'none') {
+                form.style.display = 'block';
+                btn.style.display = 'none';
+                resetListeningForm();
+            } else {
+                form.style.display = 'none';
+                btn.style.display = 'flex';
+            }
+        }
+
+        // Функция для записи аудио в конструкторе аудирования
+        async function toggleListeningRecording() {
+            const btn = document.getElementById('btnRecordListening');
+            const status = document.getElementById('listeningRecordingStatus');
+            const playback = document.getElementById('listeningAudioPlayback');
+            const audioUrlField = document.getElementById('audioUrlListening');
+
+            if (!isListeningRecording) {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    listeningMediaRecorder = new MediaRecorder(stream);
+                    listeningAudioChunks = [];
+
+                    listeningMediaRecorder.ondataavailable = e => listeningAudioChunks.push(e.data);
+
+                    listeningMediaRecorder.onstop = async () => {
+                        const blob = new Blob(listeningAudioChunks, { type: 'audio/webm' });
+                        console.log('Создан blob для аудирования:', blob.size, 'bytes');
+
+                        const formData = new FormData();
+                        formData.append('audioFile', blob, `listening_${Date.now()}.webm`);
+
+                        try {
+                            status.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Загрузка...';
+                            const response = await fetch('/api/Audio/upload', {
+                                method: 'POST',
+                                body: formData
+                            });
+
+                            const result = await response.json();
+
+                            if (result.success && audioUrlField) {
+                                audioUrlField.value = result.fileUrl;
+                                status.innerHTML = '<i class="fas fa-check-circle"></i> Сохранено!';
+                                setTimeout(() => {
+                                    status.style.display = 'none';
+                                }, 1500);
+                            } else {
+                                status.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Ошибка сервера';
+                            }
+                        } catch (err) {
+                            status.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Ошибка';
+                        }
+
+                        const tempUrl = URL.createObjectURL(blob);
+                        playback.src = tempUrl;
+                        playback.style.display = 'block';
+
+                        stream.getTracks().forEach(t => t.stop());
+                    };
+
+                    listeningMediaRecorder.start();
+                    isListeningRecording = true;
+                    btn.innerHTML = '<i class="fas fa-stop"></i> Остановить';
+                    btn.classList.add('recording');
+                    status.style.display = 'flex';
+                    status.innerHTML = '<i class="fas fa-circle recording-dot"></i> Запись...';
+                } catch (err) {
+                    console.error('Ошибка доступа к микрофону:', err);
+                    alert('Не удалось получить доступ к микрофону. Проверьте разрешения.');
+                }
+            } else {
+                if (listeningMediaRecorder) {
+                    listeningMediaRecorder.stop();
+                }
+                isListeningRecording = false;
+                btn.innerHTML = '<i class="fas fa-microphone"></i> Записать аудио';
+                btn.classList.remove('recording');
+                if (status) status.style.display = 'none';
+            }
+        }
+
+        // Сброс формы аудирования
+        function resetListeningForm() {
+            document.getElementById('audioUrlListening').value = '';
+            const playback = document.getElementById('listeningAudioPlayback');
+            playback.style.display = 'none';
+            playback.src = '';
+
+            // Сбрасываем текст полей
+            document.querySelector('#listeningForm input[name="audioDecoding"]').value = '';
+            document.querySelector('#listeningForm input[name="russianTranslation"]').value = '';
+
+            // Сбрасываем состояние записи
+            if (listeningMediaRecorder && isListeningRecording) {
+                listeningMediaRecorder.stop();
+                isListeningRecording = false;
+                const btn = document.getElementById('btnRecordListening');
+                btn.innerHTML = '<i class="fas fa-microphone"></i> Записать аудио';
+                btn.classList.remove('recording');
+            }
+        }
     </script>
 }

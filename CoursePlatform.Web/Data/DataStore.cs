@@ -97,6 +97,21 @@ public static class DataStore
         lesson.ConjugationQuestions.Add(question);
         return question;
     }
+    public static void AddListeningTask(int courseId, int lessonId, string audioUrl, string audioDecoding, string? russianTranslation)
+    {
+        var lesson = GetLesson(courseId, lessonId);
+        if (lesson == null) return;
+
+        var newTask = new ListeningTask
+        {
+            Id = lesson.ListeningTasks.Count > 0 ? lesson.ListeningTasks.Max(t => t.Id) + 1 : 1,
+            AudioUrl = audioUrl,
+            AudioDecoding = audioDecoding,
+            RussianTranslation = russianTranslation
+        };
+
+        lesson.ListeningTasks.Add(newTask);
+    }
     private static void InitializeDefaultCourses()
     {
         _courses = new List<Course>
