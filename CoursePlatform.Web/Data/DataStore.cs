@@ -121,7 +121,7 @@ public static class DataStore
                 Id = 1,
                 Title = "Осетинские глаголы",
                 Description = "Базовый курс осетинских глаголов. 47 карточек и тест на спряжение.",
-                Icon = "🇬🇪",
+                Icon = "📚",
                 Lessons = new List<Lesson>
                 {
                     new Lesson
