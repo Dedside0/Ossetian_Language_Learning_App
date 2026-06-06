@@ -119,10 +119,10 @@ public static class DataStore
                         // Задания на аудирование для Глаголов
                         ListeningTasks = new List<ListeningTask>
                         {
-                            new ListeningTask { Id = 5001, AudioUrl = "audio/verbs/ba_khordton.mp3", AudioDecoding = "Æз бахордтон", RussianTranslation = "Я поел" },
-                            new ListeningTask { Id = 5002, AudioUrl = "audio/verbs/ba_nuaztai.mp3", AudioDecoding = "Ды дон бануазтай", RussianTranslation = "Ты пил воду" },
-                            new ListeningTask { Id = 5003, AudioUrl = "audio/verbs/atsydi.mp3", AudioDecoding = "Уый ацыди", RussianTranslation = "Он ушёл" },
-                            new ListeningTask { Id = 5004, AudioUrl = "audio/verbs/dzyrdtoi.mp3", AudioDecoding = "Уыдон дзырдтой", RussianTranslation = "Они говорили" }
+                            new ListeningTask { Id = 5001, AudioUrl = "\\TaskAudio\\salam.mp3", AudioDecoding = "Æз бахордтон", RussianTranslation = "Я поел" },
+                            new ListeningTask { Id = 5002, AudioUrl = "\\TaskAudio\\salam.mp3", AudioDecoding = "Ды дон бануазтай", RussianTranslation = "Ты пил воду" },
+                            new ListeningTask { Id = 5003, AudioUrl = "\\TaskAudio\\salam.mp3", AudioDecoding = "Уый ацыди", RussianTranslation = "Он ушёл" },
+                            new ListeningTask { Id = 5004, AudioUrl = "\\TaskAudio\\salam.mp3", AudioDecoding = "Уыдон дзырдтой", RussianTranslation = "Они говорили" }
                         }
                     }
                 }
@@ -146,20 +146,20 @@ public static class DataStore
                             "<li><strong>Дæ изæр хорз!</strong> — Добрый evening!</li></ul>",
                         Cards = new List<Card>
                         {
-                            new Card { Id = 100, OssetianWord = "Салам", RussianWord = "Привет", ImageUrl = "\\CardImages\\hi.avif" },
-                            new Card { Id = 101, OssetianWord = "Дæ бон хорз", RussianWord = "Добрый день", ImageUrl = "\\CardImages\\goodafternoon.avif" },
-                            new Card { Id = 102, OssetianWord = "Дæ изæр хорз", RussianWord = "Добрый вечер", ImageUrl = "\\CardImages\\goodevening.avif" },
-                            new Card { Id = 103, OssetianWord = "Хорз бон", RussianWord = "Хорошего дня", ImageUrl = "\\CardImages\\bye.jpg" },
-                            new Card { Id = 104, OssetianWord = "Фæндараст", RussianWord = "Счастливого пути", ImageUrl = "\\CardImages\\happyroad.png" },
+                            new Card { Id = 100, OssetianWord = "Салам", RussianWord = "Привет", ImageUrl = "\\CardImages\\hi.avif", AudioUrl = "/TaskAudio/salam.mp3" },
+                            new Card { Id = 101, OssetianWord = "Дæ бон хорз", RussianWord = "Добрый день", ImageUrl = "\\CardImages\\goodafternoon.avif", AudioUrl = "/TaskAudio/da_bon_horz.mp3" },
+                            new Card { Id = 102, OssetianWord = "Дæ изæр хорз", RussianWord = "Добрый вечер", ImageUrl = "\\CardImages\\goodevening.avif", AudioUrl = "/TaskAudio/da_izar_horz.mp3" },
+                            new Card { Id = 103, OssetianWord = "Хорз бон", RussianWord = "Хорошего дня", ImageUrl = "\\CardImages\\bye.jpg", AudioUrl = "/TaskAudio/fandarast.mp3" },
+                            new Card { Id = 104, OssetianWord = "Фæндараст", RussianWord = "Счастливого пути", ImageUrl = "\\CardImages\\happyroad.png", AudioUrl = "/TaskAudio/fandarast.mp3" },
                         },
                         ConjugationQuestions = new List<ConjugationQuestion>(),
                         // Задания на аудирование для Приветствий
                         ListeningTasks = new List<ListeningTask>
                         {
-                            new ListeningTask { Id = 5101, AudioUrl = "audio/greetings/salam.mp3", AudioDecoding = "Салам", RussianTranslation = "Привет" },
-                            new ListeningTask { Id = 5102, AudioUrl = "audio/greetings/de_bon_horz.mp3", AudioDecoding = "Де бон хорз", RussianTranslation = "Добрый день" },
-                            new ListeningTask { Id = 5103, AudioUrl = "audio/greetings/da_izar_horz.mp3", AudioDecoding = "Дæ изæр хорз", RussianTranslation = "Добрый вечер" },
-                            new ListeningTask { Id = 5104, AudioUrl = "audio/greetings/fandarast.mp3", AudioDecoding = "Фæндараст", RussianTranslation = "Счастливого пути" }
+                            new ListeningTask { Id = 5101, AudioUrl = "/TaskAudio/salam.mp3", AudioDecoding = "Салам", RussianTranslation = "Привет" },
+                            new ListeningTask { Id = 5102, AudioUrl = "/TaskAudio/da_bon_horz.mp3", AudioDecoding = "Де бон хорз", RussianTranslation = "Добрый день" },
+                            new ListeningTask { Id = 5103, AudioUrl = "/TaskAudio/da_izar_horz.mp3", AudioDecoding = "Дæ изæр хорз", RussianTranslation = "Добрый вечер" },
+                            new ListeningTask { Id = 5104, AudioUrl = "/TaskAudio/fandarast.mp3", AudioDecoding = "Фæндараст", RussianTranslation = "Счастливого пути" }
                         }
                     }
                 }
@@ -181,24 +181,23 @@ public static class DataStore
                             "<ul><li><strong>Иу</strong> — 1</li><li><strong>Дыууæ</strong> — 2</li><li><strong>Æртæ</strong> — 3</li></ul>",
                         Cards = new List<Card>
                         {
-                            new Card { Id = 200, OssetianWord = "Иу", RussianWord = "Один", ImageUrl = "\\CardImages\\1.jpg" },
-                            new Card { Id = 201, OssetianWord = "Дыууæ", RussianWord = "Два", ImageUrl = "\\CardImages\\2.jpg" },
-                            new Card { Id = 202, OssetianWord = "Æртæ", RussianWord = "Три", ImageUrl = "\\CardImages\\3.jpg" },
-                            new Card { Id = 203, OssetianWord = "Цыппар", RussianWord = "Четыре", ImageUrl = "\\CardImages\\4.jpg" },
-                            new Card { Id = 204, OssetianWord = "Фондз", RussianWord = "Пять", ImageUrl = "\\CardImages\\5.jpg" },
-                            new Card { Id = 205, OssetianWord = "Æхсæз", RussianWord = "Шесть", ImageUrl = "\\CardImages\\6.jpg" },
-                            new Card { Id = 206, OssetianWord = "Авд", RussianWord = "Семь", ImageUrl = "\\CardImages\\7.jpg" },
-                            new Card { Id = 207, OssetianWord = "Аст", RussianWord = "Восемь", ImageUrl = "\\CardImages\\8.jpg" },
-                            new Card { Id = 208, OssetianWord = "Фараст", RussianWord = "Девять", ImageUrl = "\\CardImages\\9.jpg" },
+                            new Card { Id = 200, OssetianWord = "Иу", RussianWord = "Один", ImageUrl = "\\CardImages\\1.jpg" , AudioUrl = "/TaskAudio/iu.mp3"},
+                            new Card { Id = 201, OssetianWord = "Дыууæ", RussianWord = "Два", ImageUrl = "\\CardImages\\2.jpg", AudioUrl = "/TaskAudio/diuua.mp3" },
+                            new Card { Id = 202, OssetianWord = "Æртæ", RussianWord = "Три", ImageUrl = "\\CardImages\\3.jpg" , AudioUrl = "/TaskAudio/arta.mp3"},
+                            new Card { Id = 203, OssetianWord = "Цыппар", RussianWord = "Четыре", ImageUrl = "\\CardImages\\4.jpg" , AudioUrl = "/TaskAudio/cippar.mp3"},
+                            new Card { Id = 204, OssetianWord = "Фондз", RussianWord = "Пять", ImageUrl = "\\CardImages\\5.jpg" , AudioUrl = "/TaskAudio/fondz.mp3"},
+                            new Card { Id = 205, OssetianWord = "Æхсæз", RussianWord = "Шесть", ImageUrl = "\\CardImages\\6.jpg", AudioUrl = "/TaskAudio/ahsaz.mp3" },
+                            new Card { Id = 206, OssetianWord = "Авд", RussianWord = "Семь", ImageUrl = "\\CardImages\\7.jpg" , AudioUrl = "/TaskAudio/avd.mp3"},
+                            new Card { Id = 207, OssetianWord = "Аст", RussianWord = "Восемь", ImageUrl = "\\CardImages\\8.jpg" , AudioUrl = "/TaskAudio/ast.mp3"},
+                            new Card { Id = 208, OssetianWord = "Фараст", RussianWord = "Девять", ImageUrl = "\\CardImages\\9.jpg" , AudioUrl = "/TaskAudio/farast.mp3"},
                         },
                         ConjugationQuestions = new List<ConjugationQuestion>(),
                         // Задания на аудирование для Чисел
                         ListeningTasks = new List<ListeningTask>
                         {
-                            new ListeningTask { Id = 5201, AudioUrl = "audio/numbers/iu.mp3", AudioDecoding = "Иу", RussianTranslation = "Один" },
-                            new ListeningTask { Id = 5202, AudioUrl = "audio/numbers/dyuuae.mp3", AudioDecoding = "Дыууæ", RussianTranslation = "Два" },
-                            new ListeningTask { Id = 5203, AudioUrl = "audio/numbers/aertae.mp3", AudioDecoding = "Æртæ", RussianTranslation = "Три" },
-                            new ListeningTask { Id = 5204, AudioUrl = "audio/numbers/daes.mp3", AudioDecoding = "Дæс", RussianTranslation = "Десять" }
+                            new ListeningTask { Id = 5201, AudioUrl = "/TaskAudio/iu.mp3", AudioDecoding = "Иу", RussianTranslation = "Один" },
+                            new ListeningTask { Id = 5202, AudioUrl = "/TaskAudio/diuua.mp3", AudioDecoding = "Дыууæ", RussianTranslation = "Два" },
+                            new ListeningTask { Id = 5203, AudioUrl = "/TaskAudio/arta.mp3", AudioDecoding = "Æртæ", RussianTranslation = "Три" },
                         }
                     }
                 }
@@ -268,53 +267,53 @@ public static class DataStore
     {
         return new List<Card>
         {
-            new Card { Id = 1, OssetianWord = "Хæрын", RussianWord = "Есть (кушать)", VerbType = "Переходный", ImageUrl = "\\CardImages\\eat.avif" },
-            new Card { Id = 2, OssetianWord = "Нуазын", RussianWord = "Пить", VerbType = "Переходный", ImageUrl = "\\CardImages\\drink.avif" },
-            new Card { Id = 3, OssetianWord = "Цæуын", RussianWord = "Идти", VerbType = "Непереходный", ImageUrl = "\\CardImages\\walking.avif" },
-            new Card { Id = 4, OssetianWord = "Бадын", RussianWord = "Сидеть", VerbType = "Непереходный", ImageUrl = "\\CardImages\\sit.avif" },
-            new Card { Id = 5, OssetianWord = "Лæууын", RussianWord = "Стоять", VerbType = "Непереходный", ImageUrl = "\\CardImages\\stand.png" },
-            new Card { Id = 6, OssetianWord = "Хуыссын", RussianWord = "Спать", VerbType = "Непереходный", ImageUrl = "\\CardImages\\sleep.avif" },
-            new Card { Id = 7, OssetianWord = "Дзурын", RussianWord = "Говорить", VerbType = "Непереходный", ImageUrl = "\\CardImages\\talking.avif" },
-            new Card { Id = 8, OssetianWord = "Хъусын", RussianWord = "Слушать", VerbType = "Переходный", ImageUrl = "\\CardImages\\listen.png" },
-            new Card { Id = 9, OssetianWord = "Кæсын", RussianWord = "Смотреть", VerbType = "Непереходный", ImageUrl = "\\CardImages\\watch.avif" },
-            new Card { Id = 10, OssetianWord = "Фыссын", RussianWord = "Писать", VerbType = "Переходный", ImageUrl = "\\CardImages\\write.avif" },
-            new Card { Id = 11, OssetianWord = "Кæнын", RussianWord = "Делать", VerbType = "Переходный", ImageUrl = "\\CardImages\\do.avif" },
-            new Card { Id = 12, OssetianWord = "Зонын", RussianWord = "Знать", VerbType = "Переходный", ImageUrl = "\\CardImages\\know.avif" },
-            new Card { Id = 13, OssetianWord = "Уарзын", RussianWord = "Любить", VerbType = "Переходный", ImageUrl = "\\CardImages\\love.avif" },
-            new Card { Id = 14, OssetianWord = "Амондзын", RussianWord = "Учить (кого-то)", VerbType = "Переходный", ImageUrl = "\\CardImages\\teach.png" },
-            new Card { Id = 15, OssetianWord = "Ахуыр кæнын", RussianWord = "Учиться", VerbType = "Непереходный", ImageUrl = "\\CardImages\\study.avif" },
-            new Card { Id = 16, OssetianWord = "Æрбацæуын", RussianWord = "Приходить", VerbType = "Непереходный", ImageUrl = "\\CardImages\\come.jpg" },
-            new Card { Id = 17, OssetianWord = "Ацæуын", RussianWord = "Уходить", VerbType = "Непереходный", ImageUrl = "\\CardImages\\leave.jpg" },
-            new Card { Id = 18, OssetianWord = "Лæсын", RussianWord = "Ползти", VerbType = "Непереходный", ImageUrl = "\\CardImages\\crouch.avif" },
-            new Card { Id = 19, OssetianWord = "Тæхын", RussianWord = "Летать", VerbType = "Непереходный", ImageUrl = "\\CardImages\\fly.png" },
-            new Card { Id = 20, OssetianWord = "Ленк кæнын", RussianWord = "Плавать", VerbType = "Непереходный", ImageUrl = "\\CardImages\\swim.avif" },
-            new Card { Id = 21, OssetianWord = "Уайын", RussianWord = "Бежать", VerbType = "Непереходный", ImageUrl = "\\CardImages\\run.avif" },
-            new Card { Id = 22, OssetianWord = "Скъæфын", RussianWord = "Хватать", VerbType = "Переходный", ImageUrl = "\\CardImages\\grab.avif" },
-            new Card { Id = 23, OssetianWord = "Æвæрын", RussianWord = "Класть", VerbType = "Переходный", ImageUrl = "\\CardImages\\put.avif" },
-            new Card { Id = 24, OssetianWord = "Исын", RussianWord = "Брать", VerbType = "Переходный", ImageUrl = "\\CardImages\\take.avif" },
-            new Card { Id = 25, OssetianWord = "Дæттын", RussianWord = "Давать", VerbType = "Переходный", ImageUrl = "\\CardImages\\give.avif" },
-            new Card { Id = 26, OssetianWord = "Фидын", RussianWord = "Платить", VerbType = "Переходный", ImageUrl = "\\CardImages\\pay.avif" },
-            new Card { Id = 27, OssetianWord = "Æлхæнын", RussianWord = "Покупать", VerbType = "Переходный", ImageUrl = "\\CardImages\\buy.avif" },
-            new Card { Id = 28, OssetianWord = "Уæй кæнын", RussianWord = "Продавать", VerbType = "Переходный", ImageUrl = "\\CardImages\\sell.avif" },
-            new Card { Id = 29, OssetianWord = "Сафын", RussianWord = "Терять", VerbType = "Переходный", ImageUrl = "\\CardImages\\loose.png" },
-            new Card { Id = 30, OssetianWord = "Ссарын", RussianWord = "Находить", VerbType = "Переходный", ImageUrl = "\\CardImages\\find.jpg" },
-            new Card { Id = 31, OssetianWord = "Уадзын", RussianWord = "Оставлять", VerbType = "Переходный", ImageUrl = "\\CardImages\\giveup.avif" },
-            new Card { Id = 32, OssetianWord = "Æмбарын", RussianWord = "Понимать", VerbType = "Переходный", ImageUrl = "\\CardImages\\understand.png" },
-            new Card { Id = 33, OssetianWord = "Ферох кæнын", RussianWord = "Забывать", VerbType = "Переходный", ImageUrl = "\\CardImages\\forgot.avif" },
-            new Card { Id = 34, OssetianWord = "Хъæбæр кæнын", RussianWord = "Кричать", VerbType = "Непереходный", ImageUrl = "\\CardImages\\scream.jpg" },
-            new Card { Id = 35, OssetianWord = "Зарын", RussianWord = "Петь", VerbType = "Непереходный", ImageUrl = "\\CardImages\\sing.avif" },
-            new Card { Id = 36, OssetianWord = "Кафын", RussianWord = "Танцевать", VerbType = "Непереходный", ImageUrl = "\\CardImages\\dance.avif" },
-            new Card { Id = 37, OssetianWord = "Хæдзаронд кæнын", RussianWord = "Готовить (еду)", VerbType = "Переходный", ImageUrl = "\\CardImages\\cook.avif" },
-            new Card { Id = 38, OssetianWord = "Æхсын", RussianWord = "Мыть", VerbType = "Переходный", ImageUrl = "\\CardImages\\wash.avif" },
-            new Card { Id = 39, OssetianWord = "Дарын", RussianWord = "Держать", VerbType = "Переходный", ImageUrl = "\\CardImages\\keep.png" },
-            new Card { Id = 40, OssetianWord = "Тæрсын", RussianWord = "Бояться", VerbType = "Непереходный", ImageUrl = "\\CardImages\\fear.jpg" },
-            new Card { Id = 41, OssetianWord = "Худын", RussianWord = "Смеяться", VerbType = "Непереходный", ImageUrl = "\\CardImages\\laugh.avif" },
-            new Card { Id = 42, OssetianWord = "Кæуын", RussianWord = "Плакать", VerbType = "Непереходный", ImageUrl = "\\CardImages\\cry.avif" },
-            new Card { Id = 43, OssetianWord = "Хъыгæ кæнын", RussianWord = "Обижаться", VerbType = "Непереходный", ImageUrl = "\\CardImages\\angry.avif" },
-            new Card { Id = 44, OssetianWord = "Курын", RussianWord = "Просить", VerbType = "Переходный", ImageUrl = "\\CardImages\\please.avif" },
-            new Card { Id = 45, OssetianWord = "Дзæгъæлы кæнын", RussianWord = "Ломать", VerbType = "Переходный", ImageUrl = "\\CardImages\\break.avif" },
-            new Card { Id = 46, OssetianWord = "Аразын", RussianWord = "Строить", VerbType = "Переходный", ImageUrl = "\\CardImages\\build.avif" },
-            new Card { Id = 47, OssetianWord = "Фæзмын", RussianWord = "Подражать", VerbType = "Переходный", ImageUrl = "\\CardImages\\simulate.avif" }
+            new Card { Id = 1, OssetianWord = "Хæрын", RussianWord = "Есть (кушать)", VerbType = "Переходный", ImageUrl = "\\CardImages\\eat.avif" , AudioUrl = "/TaskAudio/harin.mp3"},
+            new Card { Id = 2, OssetianWord = "Нуазын", RussianWord = "Пить", VerbType = "Переходный", ImageUrl = "\\CardImages\\drink.avif" , AudioUrl = "/TaskAudio/nuzin.mp3"},
+            new Card { Id = 3, OssetianWord = "Цæуын", RussianWord = "Идти", VerbType = "Непереходный", ImageUrl = "\\CardImages\\walking.avif" , AudioUrl = "/TaskAudio/cauin.mp3"},
+            new Card { Id = 4, OssetianWord = "Бадын", RussianWord = "Сидеть", VerbType = "Непереходный", ImageUrl = "\\CardImages\\sit.avif" , AudioUrl = "/TaskAudio/badin.mp3"},
+            new Card { Id = 5, OssetianWord = "Лæууын", RussianWord = "Стоять", VerbType = "Непереходный", ImageUrl = "\\CardImages\\stand.png" , AudioUrl = "/TaskAudio/lauuin.mp3"},
+            new Card { Id = 6, OssetianWord = "Хуыссын", RussianWord = "Спать", VerbType = "Непереходный", ImageUrl = "\\CardImages\\sleep.avif" , AudioUrl = "/TaskAudio/hussin.mp3"},
+            new Card { Id = 7, OssetianWord = "Дзурын", RussianWord = "Говорить", VerbType = "Непереходный", ImageUrl = "\\CardImages\\talking.avif" , AudioUrl = "/TaskAudio/dzurin.mp3"},
+            new Card { Id = 8, OssetianWord = "Хъусын", RussianWord = "Слушать", VerbType = "Переходный", ImageUrl = "\\CardImages\\listen.png" , AudioUrl = "/TaskAudio/khusin.mp3"},
+            new Card { Id = 9, OssetianWord = "Кæсын", RussianWord = "Смотреть", VerbType = "Непереходный", ImageUrl = "\\CardImages\\watch.avif" , AudioUrl = "/TaskAudio/kasin.mp3"},
+            new Card { Id = 10, OssetianWord = "Фыссын", RussianWord = "Писать", VerbType = "Переходный", ImageUrl = "\\CardImages\\write.avif" , AudioUrl = "/TaskAudio/fissin.mp3"},
+            new Card { Id = 11, OssetianWord = "Кæнын", RussianWord = "Делать", VerbType = "Переходный", ImageUrl = "\\CardImages\\do.avif" , AudioUrl = "/TaskAudio/kanin.mp3"},
+            new Card { Id = 12, OssetianWord = "Зонын", RussianWord = "Знать", VerbType = "Переходный", ImageUrl = "\\CardImages\\know.avif" , AudioUrl = "/TaskAudio/zonin.mp3"},
+            new Card { Id = 13, OssetianWord = "Уарзын", RussianWord = "Любить", VerbType = "Переходный", ImageUrl = "\\CardImages\\love.avif" , AudioUrl = "/TaskAudio/uarzin.mp3"},
+            new Card { Id = 14, OssetianWord = "Амондзын", RussianWord = "Учить (кого-то)", VerbType = "Переходный", ImageUrl = "\\CardImages\\teach.png" , AudioUrl = "/TaskAudio/ahuir_kanin.mp3"},
+            new Card { Id = 15, OssetianWord = "Ахуыр кæнын", RussianWord = "Учиться", VerbType = "Непереходный", ImageUrl = "\\CardImages\\study.avif" , AudioUrl = "/TaskAudio/ahuir_kanin.mp3"},
+            new Card { Id = 16, OssetianWord = "Æрбацæуын", RussianWord = "Приходить", VerbType = "Непереходный", ImageUrl = "\\CardImages\\come.jpg" , AudioUrl = "/TaskAudio/arbacauin.mp3"},
+            new Card { Id = 17, OssetianWord = "Ацæуын", RussianWord = "Уходить", VerbType = "Непереходный", ImageUrl = "\\CardImages\\leave.jpg" , AudioUrl = "/TaskAudio/acauin.mp3"},
+            new Card { Id = 18, OssetianWord = "Лæсын", RussianWord = "Ползти", VerbType = "Непереходный", ImageUrl = "\\CardImages\\crouch.avif" , AudioUrl = "/TaskAudio/lasin.mp3"},
+            new Card { Id = 19, OssetianWord = "Тæхын", RussianWord = "Летать", VerbType = "Непереходный", ImageUrl = "\\CardImages\\fly.png" , AudioUrl = "/TaskAudio/tahin.mp3"},
+            new Card { Id = 20, OssetianWord = "Ленк кæнын", RussianWord = "Плавать", VerbType = "Непереходный", ImageUrl = "\\CardImages\\swim.avif" , AudioUrl = "/TaskAudio/lenk_kanin.mp3"},
+            new Card { Id = 21, OssetianWord = "Уайын", RussianWord = "Бежать", VerbType = "Непереходный", ImageUrl = "\\CardImages\\run.avif" , AudioUrl = "/TaskAudio/uain.mp3"},
+            new Card { Id = 22, OssetianWord = "Скъæфын", RussianWord = "Хватать", VerbType = "Переходный", ImageUrl = "\\CardImages\\grab.avif" , AudioUrl = "/TaskAudio/skafin.mp3"},
+            new Card { Id = 23, OssetianWord = "Æвæрын", RussianWord = "Класть", VerbType = "Переходный", ImageUrl = "\\CardImages\\put.avif", AudioUrl = "/TaskAudio/avarin.mp3" },
+            new Card { Id = 24, OssetianWord = "Исын", RussianWord = "Брать", VerbType = "Переходный", ImageUrl = "\\CardImages\\take.avif" , AudioUrl = "/TaskAudio/isin.mp3"},
+            new Card { Id = 25, OssetianWord = "Дæттын", RussianWord = "Давать", VerbType = "Переходный", ImageUrl = "\\CardImages\\give.avif" , AudioUrl = "/TaskAudio/dattin.mp3"},
+            new Card { Id = 26, OssetianWord = "Фидын", RussianWord = "Платить", VerbType = "Переходный", ImageUrl = "\\CardImages\\pay.avif" , AudioUrl = "/TaskAudio/fidin.mp3"},
+            new Card { Id = 27, OssetianWord = "Æлхæнын", RussianWord = "Покупать", VerbType = "Переходный", ImageUrl = "\\CardImages\\buy.avif" , AudioUrl = "/TaskAudio/alhanin.mp3"},
+            new Card { Id = 28, OssetianWord = "Уæй кæнын", RussianWord = "Продавать", VerbType = "Переходный", ImageUrl = "\\CardImages\\sell.avif" , AudioUrl = "/TaskAudio/uai_kanin.mp3"},
+            new Card { Id = 29, OssetianWord = "Сафын", RussianWord = "Терять", VerbType = "Переходный", ImageUrl = "\\CardImages\\loose.png" , AudioUrl = "/TaskAudio/safin.mp3"},
+            new Card { Id = 30, OssetianWord = "Ссарын", RussianWord = "Находить", VerbType = "Переходный", ImageUrl = "\\CardImages\\find.jpg" , AudioUrl = "/TaskAudio/ssarin.mp3"},
+            new Card { Id = 31, OssetianWord = "Уадзын", RussianWord = "Оставлять", VerbType = "Переходный", ImageUrl = "\\CardImages\\giveup.avif" , AudioUrl = "/TaskAudio/uadzin.mp3"},
+            new Card { Id = 32, OssetianWord = "Æмбарын", RussianWord = "Понимать", VerbType = "Переходный", ImageUrl = "\\CardImages\\understand.png" , AudioUrl = "/TaskAudio/ambarin.mp3"},
+            new Card { Id = 33, OssetianWord = "Ферох кæнын", RussianWord = "Забывать", VerbType = "Переходный", ImageUrl = "\\CardImages\\forgot.avif" , AudioUrl = "/TaskAudio/feroh_kanin.mp3"},
+            new Card { Id = 34, OssetianWord = "Хъæбæр кæнын", RussianWord = "Кричать", VerbType = "Непереходный", ImageUrl = "\\CardImages\\scream.jpg" , AudioUrl = "/TaskAudio/khabar_kanin.mp3"},
+            new Card { Id = 35, OssetianWord = "Зарын", RussianWord = "Петь", VerbType = "Непереходный", ImageUrl = "\\CardImages\\sing.avif" , AudioUrl = "/TaskAudio/zarin.mp3"},
+            new Card { Id = 36, OssetianWord = "Кафын", RussianWord = "Танцевать", VerbType = "Непереходный", ImageUrl = "\\CardImages\\dance.avif" , AudioUrl = "/TaskAudio/kafin.mp3"},
+            new Card { Id = 37, OssetianWord = "Хæдзаронд кæнын", RussianWord = "Готовить (еду)", VerbType = "Переходный", ImageUrl = "\\CardImages\\cook.avif" , AudioUrl = "/TaskAudio/ahsin.mp3"},
+            new Card { Id = 38, OssetianWord = "Æхсын", RussianWord = "Мыть", VerbType = "Переходный", ImageUrl = "\\CardImages\\wash.avif" , AudioUrl = "/TaskAudio/darin.mp3"},
+            new Card { Id = 39, OssetianWord = "Дарын", RussianWord = "Держать", VerbType = "Переходный", ImageUrl = "\\CardImages\\keep.png" , AudioUrl = "/TaskAudio/darin.mp3"},
+            new Card { Id = 40, OssetianWord = "Тæрсын", RussianWord = "Бояться", VerbType = "Непереходный", ImageUrl = "\\CardImages\\fear.jpg" , AudioUrl = "/TaskAudio/tarsin.mp3"},
+            new Card { Id = 41, OssetianWord = "Худын", RussianWord = "Смеяться", VerbType = "Непереходный", ImageUrl = "\\CardImages\\laugh.avif" , AudioUrl = "/TaskAudio/hudin.mp3"},
+            new Card { Id = 42, OssetianWord = "Кæуын", RussianWord = "Плакать", VerbType = "Непереходный", ImageUrl = "\\CardImages\\cry.avif" , AudioUrl = "/TaskAudio/kauin.mp3"},
+            new Card { Id = 43, OssetianWord = "Хъыгæ кæнын", RussianWord = "Обижаться", VerbType = "Непереходный", ImageUrl = "\\CardImages\\angry.avif" , AudioUrl = "/TaskAudio/kurin.mp3"},
+            new Card { Id = 44, OssetianWord = "Курын", RussianWord = "Просить", VerbType = "Переходный", ImageUrl = "\\CardImages\\please.avif" , AudioUrl = "/TaskAudio/kurin.mp3"},
+            new Card { Id = 45, OssetianWord = "Дзæгъæлы кæнын", RussianWord = "Ломать", VerbType = "Переходный", ImageUrl = "\\CardImages\\break.avif" , AudioUrl = "/TaskAudio/dzagali_kanin.mp3"},
+            new Card { Id = 46, OssetianWord = "Аразын", RussianWord = "Строить", VerbType = "Переходный", ImageUrl = "\\CardImages\\build.avif" , AudioUrl = "/TaskAudio/arazin.mp3"},
+            new Card { Id = 47, OssetianWord = "Фæзмын", RussianWord = "Подражать", VerbType = "Переходный", ImageUrl = "\\CardImages\\simulate.avif" , AudioUrl = "/TaskAudio/fazmin.mp3"}
         };
     }
 
