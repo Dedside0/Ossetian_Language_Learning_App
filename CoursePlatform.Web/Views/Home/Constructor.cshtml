@@ -12,7 +12,7 @@
 </div>
 
 <div class="constructor-page">
-    <div class="add-card-section" style="margin-bottom: 30px;">
+    <div class="add-card-section" >
         <h3>Редактировать текст Теории</h3>
 
         <form asp-action="UpdateTheory" method="post" id="theoryForm">
@@ -223,11 +223,67 @@
         </div>
     </div>
 
-    
+
     <div class="constructor-footer">
-        <a asp-action="Lessons" asp-route-courseId="@courseId" class="btn-primary-custom btn-done">
-            <i class="fas fa-check"></i> Готово
-        </a>
+        <div class="footer-buttons">
+            <button type="button" class="btn-chat-footer" id="openChatBtnFooter" onclick="openChatModal()">
+                <i class="fas fa-robot"></i>
+                <span>Помощник</span>
+            </button>
+            <a asp-action="Lessons" asp-route-courseId="@courseId" class="btn-primary-custom btn-done">
+                <i class="fas fa-check"></i>
+                <span>Готово</span>
+            </a>
+        </div>
+    </div>
+
+    <div id="gptChatModal" class="modal-overlay">
+        <div class="modal-content chat-modal">
+            <div class="modal-header-custom" style="padding:5px 15px;margin-bottom:0px;">
+                <h3>
+                    <i class="fas fa-robot"></i>
+                    Ассистент преподавателя
+                </h3>
+                <button type="button" class="modal-close" onclick="closeChatModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="chat-container">
+                <div class="chat-messages" id="chatMessages">
+                    <div class="chat-message assistant">
+                        <div class="message-bubble">
+                            👋 Здравствуйте! Я ваш виртуальный ассистент по платформе CoursePlatform.<br /><br />
+                            <strong>Я могу помочь вам:</strong><br />
+                            • Ответить на вопросы по работе с платформой<br />
+                            • Дать советы по созданию уроков и карточек<br />
+                            • Предоставить ссылки на методические материалы<br />
+                            • Подсказать, как использовать все функции конструктора<br /><br />
+                            <strong>Попробуйте спросить меня:</strong><br />
+                            <button class="quick-question-btn" onclick="addQuickQuestion('Как добавить карточку?')">📝 Как добавить карточку?</button>
+                            <button class="quick-question-btn" onclick="addQuickQuestion('Как сгенерировать изображение?')">🎨 Как сгенерировать изображение?</button>
+                            <button class="quick-question-btn" onclick="addQuickQuestion('Где найти материалы по грамматике?')">📚 Где найти материалы?</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chat-input-area">
+                    <div class="chat-input-wrapper">
+                        <input type="text"
+                               id="chatInput"
+                               class="chat-input"
+                               placeholder="Задайте вопрос о платформе или методике преподавания..."
+                               onkeypress="handleKeyPress(event)" />
+                        <button class="chat-send-btn" onclick="sendMessage()">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                    <div class="chat-loader" id="chatLoader" style="display: none;">
+                        <i class="fas fa-spinner fa-spin"></i> Думаю над ответом...
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -493,5 +549,120 @@
             btns.forEach(btn => btn.classList.remove('active'));
             btns[0].classList.add('active');
         }
+                // Функции для управления чатом
+        function openChatModal() {
+            const modal = document.getElementById('gptChatModal');
+            modal.classList.add('show');
+            document.getElementById('chatInput').focus();
+        }
+
+        function closeChatModal() {
+            const modal = document.getElementById('gptChatModal');
+            modal.classList.remove('show');
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const question = input.value.trim();
+
+            if (!question) return;
+
+            // Добавляем вопрос пользователя
+            addMessage(question, 'user');
+            input.value = '';
+
+            // Показываем индикатор загрузки
+            const loader = document.getElementById('chatLoader');
+            loader.style.display = 'block';
+
+            // Блокируем кнопку отправки
+            const sendBtn = document.querySelector('.chat-send-btn');
+            sendBtn.disabled = true;
+
+            try {
+                const response = await fetch('/api/chat/ask', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ question: question })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Форматируем ответ (подсвечиваем ссылки)
+                    const formattedAnswer = formatAnswer(result.answer);
+                    addMessage(formattedAnswer, 'assistant', true);
+                } else {
+                    addMessage('Извините, произошла ошибка. Попробуйте переформулировать вопрос или обратитесь в поддержку. 🤔', 'assistant');
+                }
+            } catch (error) {
+                console.error('Ошибка:', error);
+                addMessage('Не удалось соединиться с сервером. Проверьте интернет-соединение и попробуйте снова. 🔌', 'assistant');
+            } finally {
+                loader.style.display = 'none';
+                sendBtn.disabled = false;
+                input.focus();
+            }
+        }
+
+        function addMessage(text, sender, isHtml = false) {
+            const messagesContainer = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `chat-message ${sender}`;
+
+            const bubble = document.createElement('div');
+            bubble.className = 'message-bubble';
+
+            if (isHtml) {
+                bubble.innerHTML = text;
+            } else {
+                bubble.textContent = text;
+            }
+
+            messageDiv.appendChild(bubble);
+            messagesContainer.appendChild(messageDiv);
+
+            // Прокручиваем вниз
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function formatAnswer(text) {
+            // Преобразуем ссылки в кликабельные
+            const urlRegex = /(https?:\/\/[^\s]+)/g;
+            let formatted = text.replace(urlRegex, function(url) {
+                return `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color: #667eea; text-decoration: underline;">${url}</a>`;
+            });
+
+            // Подсвечиваем названия функций платформы
+            const platformTerms = [
+                'конструктор урока', 'конструктор карточек', 'конструктор тестов',
+                'текстовый редактор Quill', 'генерация изображений', 'аудиозапись',
+                'Добавить карточку', 'Сохранить карточку', 'карточка'
+            ];
+
+            platformTerms.forEach(term => {
+                const regex = new RegExp(`(${term})`, 'gi');
+                formatted = formatted.replace(regex, `<strong style="color: #764ba2;">$1</strong>`);
+            });
+
+            return formatted;
+        }
+
+        // Добавляем быстрые вопросы (опционально)
+        function addQuickQuestion(question) {
+            document.getElementById('chatInput').value = question;
+            sendMessage();
+        }
+
+        // Привязываем обработчик к кнопке
+        document.getElementById('openChatBtn').addEventListener('click', openChatModal);
     </script>
 }
