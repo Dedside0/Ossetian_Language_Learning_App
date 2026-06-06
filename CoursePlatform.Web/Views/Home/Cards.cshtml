@@ -93,7 +93,7 @@
         if (url && url !== 'null' && url.trim() !== '') {
             try {
                 // Создаем аудио в памяти и сразу воспроизводим
-                const audio = new Audio(url);
+                    const audio = new Audio(url.replace(/\\/g, '/'));
                 audio.play().catch(err => {
                     console.error("Ошибка воспроизведения файла:", err);
                 });
