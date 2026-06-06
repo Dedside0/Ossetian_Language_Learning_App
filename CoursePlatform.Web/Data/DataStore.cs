@@ -119,10 +119,10 @@ public static class DataStore
                         // Задания на аудирование для Глаголов
                         ListeningTasks = new List<ListeningTask>
                         {
-                            new ListeningTask { Id = 5001, AudioUrl = "\\TaskAudio\\salam.mp3", AudioDecoding = "Æз бахордтон", RussianTranslation = "Я поел" },
-                            new ListeningTask { Id = 5002, AudioUrl = "\\TaskAudio\\salam.mp3", AudioDecoding = "Ды дон бануазтай", RussianTranslation = "Ты пил воду" },
-                            new ListeningTask { Id = 5003, AudioUrl = "\\TaskAudio\\salam.mp3", AudioDecoding = "Уый ацыди", RussianTranslation = "Он ушёл" },
-                            new ListeningTask { Id = 5004, AudioUrl = "\\TaskAudio\\salam.mp3", AudioDecoding = "Уыдон дзырдтой", RussianTranslation = "Они говорили" }
+                            new ListeningTask { Id = 5001, AudioUrl = "/TaskAudio/az_bahordton.mp3", AudioDecoding = "Æз бахордтон", RussianTranslation = "Я поел" },
+                            new ListeningTask { Id = 5002, AudioUrl = "/TaskAudio/di_don_baniztai.mp3", AudioDecoding = "Ды дон бануазтай", RussianTranslation = "Ты пил воду" },
+                            new ListeningTask { Id = 5003, AudioUrl = "/TaskAudio/ui_acidi.mp3", AudioDecoding = "Уый ацыди", RussianTranslation = "Он ушёл" },
+                            new ListeningTask { Id = 5004, AudioUrl = "/TaskAudio/uidon_dzirdtoi.mp3", AudioDecoding = "Уыдон дзырдтой", RussianTranslation = "Они говорили" }
                         }
                     }
                 }
