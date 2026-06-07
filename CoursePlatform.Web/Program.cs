@@ -1,4 +1,5 @@
 using CoursePlatform.Web.Services;
+using Microsoft.AspNetCore.HttpOverrides; // ИСПРАВЛЕНО: добавили пространство имен
 
 namespace CoursePlatform.Web
 {
@@ -14,24 +15,33 @@ namespace CoursePlatform.Web
             builder.Services.AddHttpClient("YandexAIClient", client =>
             {
                 client.BaseAddress = new Uri("https://llm.api.cloud.yandex.net/");
-
                 var apiKey = Environment.GetEnvironmentVariable("YANDEX_API_KEY");
-
                 client.DefaultRequestHeaders.Add("Authorization", $"Api-Key {apiKey}");
             });
             builder.Services.AddScoped<YandexGptService>();
             builder.Services.AddScoped<YandexArtService>();
             var app = builder.Build();
 
+            // ИСПРАВЛЕНО: Настройка обработки заголовков от Nginx. 
+            // Должна стоять на самом верху конвейера!
+            app.UseForwardedHeaders(new ForwardedHeadersOptions
+            {
+                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+            });
+
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                // The default HSTS value is 30 days.
                 app.UseHsts();
             }
+            else
+            {
+                // ИСПРАВЛЕНО: Перенаправление на HTTPS работает ТОЛЬКО при локальной разработке
+                app.UseHttpsRedirection();
+            }
 
-            app.UseHttpsRedirection();
             app.UseRouting();
             app.UseStaticFiles();
             app.UseAuthorization();

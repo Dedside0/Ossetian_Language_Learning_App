@@ -442,7 +442,7 @@
             const btn = document.getElementById('btnRecord');
             const status = document.getElementById('recordingStatus');
             const playback = document.getElementById('audioPlayback');
-            const audioUrlField = document.getElementById('audioUrl');
+            const audioUrlField = document.getElementById('audioUrlCard');
 
         if (!isRecording) {
             try {
@@ -626,7 +626,7 @@
             document.getElementById('imageFile').value = '';
             document.getElementById('imagePrompt').value = '';
         }
-                function resetImageForm() {
+        function resetImageForm() {
             document.getElementById('imageUrl').value = '';
             document.getElementById('imagePreviewSection').style.display = 'none';
             document.getElementById('imagePreview').innerHTML = '';
@@ -757,9 +757,6 @@
             document.getElementById('chatInput').value = question;
             sendMessage();
         }
-
-        // Привязываем обработчик к кнопке
-        document.getElementById('openChatBtn').addEventListener('click', openChatModal);
 
 
         // Функции для управления формой аудирования

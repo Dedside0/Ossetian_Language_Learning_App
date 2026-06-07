@@ -89,11 +89,13 @@
     }
 
         function speakWord(word, url) {
+                                    console.log(url);
         // Проверяем, что URL существует, не равен null, не пустой и не является строкой "null"
         if (url && url !== 'null' && url.trim() !== '') {
             try {
                 // Создаем аудио в памяти и сразу воспроизводим
-                    const audio = new Audio(url.replace(/\\/g, '/'));
+                    const audio = new Audio(url);
+                    console.log(url);
                 audio.play().catch(err => {
                     console.error("Ошибка воспроизведения файла:", err);
                 });
